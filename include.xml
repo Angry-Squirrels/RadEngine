@@ -3,4 +3,6 @@
 	<haxelib name="openfl" />
 	<haxelib name="ash" />
 	<haxelib name="hscript" />
+	
+	<haxeflag name="--macro include('fr.radstar.radengine.components', true)" />
 </project>
