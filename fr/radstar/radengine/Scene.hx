@@ -36,7 +36,8 @@ class Scene
 	// set the engine systems and entity
 	public function start(engine : Engine) 
 	{
-		
+		for (system in mSystems) engine.addSystem(system,0);
+		for (entity in mEntitys) engine.addEntity(entity);
 	}
 	
 	public function end() 
@@ -59,10 +60,18 @@ class Scene
 		
 		// systems list
 		var systems : Array<Dynamic> = sceneData.systems;
+		for (current in systems) loadSystem(current);
 		
 		// entity list
 		var entitys : Array<Dynamic> = sceneData.entitys;
 		for (current in entitys) loadEntity(current);
+	}
+	
+	function loadSystem(current : Dynamic) {
+		var systemClassName = 'fr.radstar.radengine.systems.' + current;
+		var systemClass = Type.resolveClass(systemClassName);
+		var system = Type.createInstance(systemClass, []);
+		mSystems.push(system);
 	}
 	
 	function loadEntity(current : Dynamic) {
@@ -79,7 +88,7 @@ class Scene
 	function loadComponent(current : Dynamic) : Dynamic {
 		var compClassName = "fr.radstar.radengine.components." + current.name;
 		var compClass = Type.resolveClass(compClassName);
-		var comp = Type.createEmptyInstance(compClass);
+		var comp = Type.createInstance(compClass, []);
 		var params = current.params;
 		
 		for (field in Reflect.fields(params)) {
