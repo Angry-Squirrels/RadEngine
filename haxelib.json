@@ -1,0 +1,14 @@
+{
+	"name" : "RadEngine",
+	"url" : "https://github.com/Rad-Star/RadEngine",
+	"license" : "MIT",
+    "description" : "haxe game engine",
+    "version" : "0.0.1",
+	"releasenote" : "",
+	"contributors" : ["TBaudon"],
+    "dependencies" : { 
+		"openfl" : "",
+		"ash" : "",
+		"hscript" : ""
+	}
+}
