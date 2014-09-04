@@ -1,6 +1,7 @@
 package fr.radstar.radengine;
 
 import ash.core.Engine;
+import fr.radstar.radengine.tools.Console;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
@@ -25,6 +26,19 @@ class RadGame extends Sprite
 		mLastTime = Lib.getTimer();
 		
 		mEngine = new Engine();
+		
+		#if debug
+		initDebugTools();
+		#end
+	}
+	
+	function initDebugTools() 
+	{
+		new Console(this, mEngine);
+	}
+	
+	public function loadScene(name : String) : Scene {
+		return new Scene(name);
 	}
 	
 	public function gotoScene(scene : Scene) {
