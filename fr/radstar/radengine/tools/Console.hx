@@ -2,10 +2,6 @@ package fr.radstar.radengine.tools;
 
 import ash.core.Engine;
 import fr.radstar.radengine.RadGame;
-import hscript.Parser;
-import hscript.Expr;
-import hscript.Interp;
-import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.Lib;
@@ -21,16 +17,13 @@ import openfl.ui.Keyboard;
  */
 class Console extends Sprite
 {
-	
 	var mVisible : Bool;
 	var mGame : RadGame;
 	var mEngine : Engine;
 	
 	var mInput : TextField;
 	
-	var mAst : Expr;
-	var mInterp : Interp;
-	var mParser : Parser;
+	var mCommands : Map<String, Dynamic>;
 
 	public function new(game : RadGame, engine : Engine) 
 	{
@@ -39,29 +32,21 @@ class Console extends Sprite
 		mGame = game;
 		mEngine = engine;
 		initInput();
-		initInterp();
+		
+		mCommands = new Map<String, Dynamic>();
 		
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		
 		mVisible = false;
 	}
 	
-	function initInterp() 
-	{
-		mParser = new Parser();
-		mParser.allowJSON = true;
-		mParser.allowTypes = true;
-		
-		mInterp = new Interp();
-		mInterp.variables.set('engine', mEngine);
-		mInterp.variables.set('game', mGame);
+	public function addCommad(object : Dynamic, name : String) {
+		mCommands[name] = object;
 	}
 	
-	private function onKeyDown(e:KeyboardEvent):Void 
+	function onKeyDown(e:KeyboardEvent):Void 
 	{
 		if (e.keyCode == Keyboard.TAB && e.ctrlKey) {
-			
-			drawBg();
 			
 			mVisible = !mVisible;
 			
@@ -72,37 +57,49 @@ class Console extends Sprite
 		}else if (e.keyCode == Keyboard.ENTER && mVisible) {
 			e.stopImmediatePropagation();
 			
-			try {
-				var command = mInput.text.substr(2) ;
-				mAst = mParser.parseString(command);
-				mInterp.execute(mAst);
-				mInput.text = "=>";
-			}catch (e : Error) {
-				trace(e.getName());
+			var command = mInput.text.substr(2);
+			var name = command.split(' ')[0];
+			var params : Array<Dynamic> = command.split(' ');
+			params.shift();
+			
+			for (i in 0 ... params.length) {
+				if (params[i] == 'false')
+					params[i] = false;
+				else if (params[i] == 'true')
+					params[i] = true;
+			}
+			
+			if (mCommands[name] != null) {
+				try{
+					var o = mCommands[name];
+					Reflect.callMethod(o, Reflect.field(o, name), params);
+					mInput.text = '=>';
+				}catch (e : Dynamic) {
+					trace(e);
+				}
 			}
 		}
-	}
-	
-	function drawBg():Void 
-	{
-		var w = Lib.current.stage.stageWidth;
 		
-		graphics.clear();
-		graphics.lineStyle(1, 0x00cc00);
-		graphics.beginFill(0x000000, 0.5);
-		graphics.drawRect(0, 0, w, 150);
+		if (mInput.text.length < 2 || (mInput.text.length == 2 && mInput.text != "=>"))
+			mInput.text = "=>";
 	}
 	
 	function initInput():Void 
 	{
 		mInput = new TextField();
-		mInput.defaultTextFormat = new TextFormat('arial', 12, 0x00cc00);
+		mInput.defaultTextFormat = new TextFormat('arial', 14, 0x00cc00, true);
 		mInput.multiline = false;
 		mInput.type = TextFieldType.INPUT;
-		mInput.autoSize = TextFieldAutoSize.LEFT;
 		mInput.text = "=>";
+		mInput.width = Lib.current.stage.stageWidth;
+		mInput.height = 20;
+		mInput.background = true;
+		mInput.backgroundColor = 0x000000;
+		mInput.border = true;
+		mInput.borderColor = 0x00ff00;
+		mInput.alpha = 0.8;
 		addChild(mInput);
-		mInput.y = 150 - mInput.height;
+		mInput.y = Lib.current.stage.stageHeight - mInput.height;
 	}
 	
 }

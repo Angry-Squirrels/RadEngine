@@ -32,13 +32,28 @@ class RadGame extends Sprite
 		#end
 	}
 	
+	#if debug
 	function initDebugTools() 
 	{
-		new Console(this, mEngine);
+		var console = new Console(this, mEngine);
+		console.addCommad(this, 'loadScene');
+		console.addCommad(this, 'editMode');
 	}
 	
-	public function loadScene(name : String) : Scene {
-		return new Scene(name);
+	function editMode(bool : Bool) {
+		if (bool) {
+			
+		}else {
+			
+		}
+	}
+	
+	#end
+	
+	public function loadScene(name : String, goto : Bool = true) : Scene {
+		var scene = new Scene(name);
+		if (goto) gotoScene(scene);
+		return return scene;
 	}
 	
 	public function gotoScene(scene : Scene) {
