@@ -5,6 +5,7 @@ import ash.core.Entity;
 import fr.radstar.radengine.components.RadComp;
 import fr.radstar.radengine.systems.RadSystem;
 import fr.radstar.radengine.tools.Console;
+import haxe.Json;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
@@ -45,9 +46,10 @@ class RadGame extends Sprite
 	function initDebugTools() 
 	{
 		var console = new Console(this, mEngine);
-		console.addCommad(this, 'loadScene');
-		console.addCommad(this, 'editMode');
-		console.addCommad(this, 'selectEntityByName');
+		console.addCommad(this, loadScene, 'load');
+		console.addCommad(this, editMode, 'edit');
+		console.addCommad(this, selectEntityByName, 'select');
+		console.addCommad(this, saveScene, 'save');
 	}
 	
 	function editMode(bool : Bool) {
@@ -65,6 +67,11 @@ class RadGame extends Sprite
 		}
 		
 		if (!bool) selectEntity(null);
+	}
+	
+	function saveScene(name : String) {
+		if (mCurrentScene != null)
+			mCurrentScene.save(name);
 	}
 	#end
 	

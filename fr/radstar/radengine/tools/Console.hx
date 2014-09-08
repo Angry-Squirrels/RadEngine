@@ -24,7 +24,7 @@ class Console extends Sprite
 	
 	var mInput : TextField;
 	
-	var mCommands : Map<String, Dynamic>;
+	var mCommands : Map<String, {target : Dynamic, method : Dynamic}>;
 	
 	var mCommandHistoy : Array<String>;
 	var mHistoryPos : Int;
@@ -39,7 +39,7 @@ class Console extends Sprite
 		mHistoryPos = 0;
 		initInput();
 		
-		mCommands = new Map<String, Dynamic>();
+		mCommands = new Map<String, {target : Dynamic, method : Dynamic}>();
 		
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		Lib.current.stage.addEventListener(Event.RESIZE, updateSize);
@@ -47,8 +47,8 @@ class Console extends Sprite
 		mVisible = false;
 	}
 	
-	public function addCommad(object : Dynamic, name : String) {
-		mCommands[name] = object;
+	public function addCommad(object : Dynamic, func : Dynamic, alias : String) {
+		mCommands[alias] = {target : object, method : func};
 	}
 	
 	function updateSize(e : Event = null) {
@@ -93,8 +93,9 @@ class Console extends Sprite
 			
 			if (mCommands[name] != null) {
 				try{
-					var o = mCommands[name];
-					Reflect.callMethod(o, Reflect.field(o, name), paramToApply);
+					var o = mCommands[name].target;
+					var f = mCommands[name].method;
+					Reflect.callMethod(o, f, paramToApply);
 					mCommandHistoy.push(command);
 					mHistoryPos = mCommandHistoy.length - 1;
 				}catch (e : Dynamic) {

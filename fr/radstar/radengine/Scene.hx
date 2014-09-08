@@ -5,6 +5,7 @@ import ash.core.System;
 import haxe.io.Path;
 import haxe.Json;
 import openfl.Assets;
+import sys.io.File;
 
 /**
  * ...
@@ -50,12 +51,53 @@ class Scene
 		
 	}
 	
+	public function save(name : String)
+	{
+		var sysTab = new Array<String>();
+		for (system in mSystems) {
+			var name = Type.getClassName(Type.getClass(system));
+			var split = name.split('.');
+			name = split[split.length - 1];
+			sysTab.push(name);
+		}
+		
+		var entityTab = new Array<Dynamic>();
+		for (entity in mEntitys) {
+			
+			var compTab = new Array<Dynamic>();
+			for (comp in entity.components) {
+				
+				var compName = Type.getClassName(Type.getClass(comp));
+				var compSplit = compName.split('.');
+				compName = compSplit[compSplit.length - 1];
+				compTab.push( { name : compName, params : comp } );
+			}
+			
+			var ent = { name : entity.name, components : compTab };
+			entityTab.push(ent);
+		}
+		
+		var scene = { systems : sysTab, entitys : entityTab };
+		var result = Json.stringify(scene, replace, '\t');
+		
+		var file = File.write('scenes/' + name+'.json');
+		file.writeString(result);
+		file.close();
+	}
+	
+	function replace(key : Dynamic, value : Dynamic) : Dynamic {
+		var name : String = cast key;
+		if (name.indexOf('m') == 0)
+			return null;
+		return value;
+	}
+	
 	/**
 	 * Read from json scene file systems to use and entity
 	 */
 	function load() 
 	{
-		var json = Assets.getText(mPath.toString());
+		var json = File.getContent(mPath.toString());
 		var sceneData = Json.parse(json);
 		
 		// systems list

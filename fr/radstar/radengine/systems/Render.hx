@@ -18,7 +18,8 @@ class Render extends ListIteratingSystem<RenderNode> implements RadSystem
 	
 	var mCanvas : Sprite;
 	
-	var mViewEntityMap : Map<View, Entity>;
+	var mNodeMap : Map<RenderNode, Sprite>;
+	var mViewMap : Map<Sprite, RenderNode>;
 	var mEditMode : Bool;
 
 	public function new() 
@@ -28,7 +29,8 @@ class Render extends ListIteratingSystem<RenderNode> implements RadSystem
 		mCanvas = new Sprite();
 		Lib.current.stage.addChild(mCanvas);
 		
-		mViewEntityMap = new Map<View, Entity>();
+		mNodeMap = new Map<RenderNode, Sprite>();
+		mViewMap = new Map<Sprite, RenderNode>();
 		mEditMode = false;
 	}
 	
@@ -39,8 +41,8 @@ class Render extends ListIteratingSystem<RenderNode> implements RadSystem
 		mEditMode = true;
 		for (node in nodeList) {
 			var current : RenderNode = node;
-			mViewEntityMap[current.view] = current.entity;
-			current.view.addEventListener(MouseEvent.CLICK, onClick);
+			mNodeMap[current].addEventListener(MouseEvent.CLICK, onClick);
+			current.view.setView(mNodeMap[current]);
 		}
 	}
 	
@@ -49,35 +51,40 @@ class Render extends ListIteratingSystem<RenderNode> implements RadSystem
 		mEditMode = false;
 		for (node in nodeList) {
 			var current : RenderNode = node;
-			mViewEntityMap.remove(current.view);
-			current.view.removeEventListener(MouseEvent.CLICK, onClick);
+			mNodeMap[current].removeEventListener(MouseEvent.CLICK, onClick);
 		}
 	}
 	
 	private function onClick(e:Event):Void 
 	{
 		var view = e.currentTarget;
-		var entity = mViewEntityMap[view];
+		var entity = mViewMap[view].entity;
 		RadGame.instance.selectEntity(entity);
 	}
 	
 	function onNodeRemoved(node : RenderNode) 
 	{
-		mCanvas.removeChild(node.view);
+		mCanvas.removeChild(mNodeMap[node]);
 	}
 	
 	function onNodeAdded(node : RenderNode) 
 	{
-		mCanvas.addChild(node.view);
+		var view = new Sprite();
+		view.graphics.beginFill(0xff0000);
+		view.graphics.drawCircle(0, 0, 50);
+		mCanvas.addChild(view);
+		mNodeMap[node] = view;
+		mViewMap[view] = node;
 	}
 	
 	function onNodeUpdate(node : RenderNode, time : Float) 
 	{
-		node.view.x = node.transform.x;
-		node.view.y = node.transform.y;
-		node.view.rotation = node.transform.rotation;
-		node.view.scaleX = node.transform.scaleX;
-		node.view.scaleY = node.transform.scaleY;
+		var view = mNodeMap[node];
+		view.x = node.transform.x;
+		view.y = node.transform.y;
+		view.rotation = node.transform.rotation;
+		view.scaleX = node.transform.scaleX;
+		view.scaleY = node.transform.scaleY;
 	}
 	
 }
