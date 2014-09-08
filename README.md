@@ -46,6 +46,7 @@ RadEngine use a lot the "#if debug" preprocessor.
 In debug build, you should have access to the editor by pressing ctrl + alt + D.
 The game is now in edit mode.
 In edit mode, you can create scene and entity, or edit an existing scene, and save.
+
 Here is a list of the available command in edit mode :
 
   - edit bool : if bool is true, enters the edit mode, otherwise, leaves the edit mode
