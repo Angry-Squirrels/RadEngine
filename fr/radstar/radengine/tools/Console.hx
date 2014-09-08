@@ -3,6 +3,7 @@ package fr.radstar.radengine.tools;
 import ash.core.Engine;
 import fr.radstar.radengine.RadGame;
 import openfl.display.Sprite;
+import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.Lib;
 import openfl.text.TextField;
@@ -41,12 +42,19 @@ class Console extends Sprite
 		mCommands = new Map<String, Dynamic>();
 		
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		Lib.current.stage.addEventListener(Event.RESIZE, updateSize);
 		
 		mVisible = false;
 	}
 	
 	public function addCommad(object : Dynamic, name : String) {
 		mCommands[name] = object;
+	}
+	
+	function updateSize(e : Event = null) {
+		mInput.width = Lib.current.stage.stageWidth;
+		mInput.height = 20;
+		mInput.y = Lib.current.stage.stageHeight - mInput.height;
 	}
 	
 	function onKeyDown(e:KeyboardEvent):Void 
@@ -60,6 +68,7 @@ class Console extends Sprite
 			if (mVisible){
 				Lib.current.stage.addChild(this);
 				Lib.current.stage.focus = mInput;
+				updateSize();
 			}
 			else
 				Lib.current.stage.removeChild(this);
@@ -94,6 +103,7 @@ class Console extends Sprite
 			}else {
 				trace("No such command");
 			}
+			mInput.text = "";
 		}else if (e.keyCode == Keyboard.UP && mVisible) {
 			e.stopImmediatePropagation();
 			
@@ -113,15 +123,13 @@ class Console extends Sprite
 		mInput.defaultTextFormat = new TextFormat('arial', 14, 0x00cc00, true);
 		mInput.multiline = false;
 		mInput.type = TextFieldType.INPUT;
-		mInput.width = Lib.current.stage.stageWidth;
-		mInput.height = 20;
 		mInput.background = true;
 		mInput.backgroundColor = 0x000000;
 		mInput.border = true;
 		mInput.borderColor = 0x00ff00;
 		mInput.alpha = 0.8;
+		updateSize();
 		addChild(mInput);
-		mInput.y = Lib.current.stage.stageHeight - mInput.height;
 	}
 	
 }
