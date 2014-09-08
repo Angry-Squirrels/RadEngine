@@ -11,4 +11,10 @@ interface RadSystem
 	
 	function leaveEditMode() : Void;
 	
+	function shouldStop() : Bool;
+	
+	function pause() : Void;
+	
+	function resume() : Void;
+	
 }

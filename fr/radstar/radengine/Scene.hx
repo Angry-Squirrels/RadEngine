@@ -20,14 +20,19 @@ class Scene
 	var mSystems : Array<System>;
 	var mEntitys : Array<Entity>;
 	
-	public function new(sceneName : String) 
+	public var name : String;
+	
+	public function new(sceneName : String, autoLoad : Bool = true) 
 	{
 		mPath = new Path("scenes/" + sceneName + ".json");
 		
 		mSystems = new Array<System>();
 		mEntitys = new Array<Entity>();
 		
-		load();
+		name = sceneName;
+		
+		if(autoLoad)
+			load();
 	}
 	
 	public function update(deltaTime : Float) {
@@ -51,7 +56,7 @@ class Scene
 		
 	}
 	
-	public function save(name : String, engine : Engine)
+	public function save(engine : Engine)
 	{
 		mSystems = new Array<System>();
 		for (system in engine.systems) mSystems.push(system);
@@ -86,7 +91,7 @@ class Scene
 		var scene = { systems : sysTab, entitys : entityTab };
 		var result = Json.stringify(scene, replace, '\t');
 		
-		var file = File.write('scenes/' + name+'.json');
+		var file = File.write(mPath.toString());
 		file.writeString(result);
 		file.close();
 	}

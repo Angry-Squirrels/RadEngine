@@ -14,6 +14,7 @@ implements RadComp
 	
 	public var pivotX : Int;
 	public var pivotY : Int;
+	
 	public var view : String;
 
 	public function new() 
@@ -38,7 +39,7 @@ implements RadComp
 		
 		mBox.graphics.clear();
 		mBox.graphics.lineStyle(2, 0xcccccc);
-		mBox.graphics.drawRect(-pivotX, -pivotY, mView.width, mView.height);
+		mBox.graphics.drawRect(-pivotX, -pivotY, mView.width/mView.scaleX, mView.height/mView.scaleY);
 	}
 	
 	public function unEdit():Void 

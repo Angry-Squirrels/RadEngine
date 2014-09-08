@@ -2,6 +2,7 @@ package fr.radstar.radengine;
 
 import ash.core.Engine;
 import ash.core.Entity;
+import ash.core.System;
 import fr.radstar.radengine.components.RadComp;
 import fr.radstar.radengine.systems.RadSystem;
 import fr.radstar.radengine.tools.Console;
@@ -22,6 +23,7 @@ class RadGame extends Sprite
 	var mEngine : Engine;
 	var mEditMode : Bool;
 	var mSelectedEntity : Entity;
+	var mStop : Bool;
 	
 	public static var instance : RadGame;
 
@@ -30,6 +32,8 @@ class RadGame extends Sprite
 		super();
 		
 		instance = this;
+		
+		mStop = false;
 		
 		Lib.current.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		
@@ -54,10 +58,17 @@ class RadGame extends Sprite
 		console.addCommad(this, saveScene, 'save');
 		console.addCommad(this, createEntity, 'create');
 		console.addCommad(this, addComponent, 'add');
+		console.addCommad(this, createScene, 'createScene');
+		console.addCommad(this, addSystem, 'addSystem');
+		console.addCommad(this, editComp, 'editComp');
+		console.addCommad(this, stop, 'stop');
+		console.addCommad(this, resume, 'resume');
+		console.addCommad(this, pause, 'pause');
 	}
 	
-	function editMode(bool : Bool) {
-		mEditMode = bool;
+	function editMode(edit : Bool) {
+		mEditMode = edit;
+		
 		var systems = mEngine.systems;
 		
 		for (current in systems) {
@@ -70,12 +81,19 @@ class RadGame extends Sprite
 			}
 		}
 		
-		if (!bool) selectEntity(null);
+		if (!edit) selectEntity(null);
 	}
 	
-	function saveScene(name : String) {
+	function editComp(name : String, prop : String, value : Dynamic) {
+		if (mSelectedEntity != null) {
+			var comp = mSelectedEntity.get(Type.resolveClass('fr.radstar.radengine.components.' + name));
+			Reflect.setProperty(comp, prop, value);
+		}
+	}
+	
+	function saveScene() {
 		if (mCurrentScene != null)
-			mCurrentScene.save(name, mEngine);
+			mCurrentScene.save(mEngine);
 	}
 	
 	function addComponent(name : String) {
@@ -88,6 +106,42 @@ class RadGame extends Sprite
 		mEngine.addEntity(ent);
 		selectEntity(ent);
 		return ent;
+	}
+	
+	function createScene(name : String) {
+		var scene = new Scene(name, false);
+		gotoScene(scene);
+	}
+	
+	function addSystem(name : String) {
+		var system = Type.createInstance(Type.resolveClass('fr.radstar.radengine.systems.' + name), []);
+		mEngine.addSystem(system, 0);
+	}
+	
+	function pause() {
+		mStop = true;
+		for (system in mEngine.systems) {
+			if (Std.is(system, RadSystem)) {
+				var current : RadSystem = cast system;
+				if (current.shouldStop()) {
+					current.pause();
+				}
+			}
+		}
+	}
+	
+	function stop() {
+		loadScene(mCurrentScene.name, true);
+		pause();
+	}
+	
+	function resume() {
+		mStop = false;
+		for (system in mEngine.systems)
+			if (Std.is(system, RadSystem)) {
+				var current : RadSystem = cast system;
+				current.resume();
+			}
 	}
 	#end
 	

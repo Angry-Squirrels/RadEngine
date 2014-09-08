@@ -24,6 +24,8 @@ implements RadSystem
 	var mNodeMap : Map<RenderNode, Sprite>;
 	var mViewMap : Map<Sprite, RenderNode>;
 	var mEditMode : Bool;
+	
+	var mPause : Bool;
 
 	public function new() 
 	{
@@ -35,6 +37,7 @@ implements RadSystem
 		mNodeMap = new Map<RenderNode, Sprite>();
 		mViewMap = new Map<Sprite, RenderNode>();
 		mEditMode = false;
+		mPause = false;
 	}
 	
 	/* INTERFACE fr.radstar.radengine.systems.RadSystem */
@@ -64,7 +67,24 @@ implements RadSystem
 		var entity = mViewMap[view].entity;
 		RadGame.instance.selectEntity(entity);
 	}
+	
 	#end
+	
+	public function shouldStop() : Bool {
+		return false;
+	}
+	
+	/* INTERFACE fr.radstar.radengine.systems.RadSystem */
+	
+	public function pause():Void 
+	{
+		mPause = true;
+	}
+	
+	public function resume():Void 
+	{
+		mPause = false;
+	}
 	
 	function onNodeRemoved(node : RenderNode) 
 	{
