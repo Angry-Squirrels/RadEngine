@@ -8,7 +8,10 @@ import openfl.Lib;
  * ...
  * @author TBaudon
  */
-class Transform implements RadComp
+class Transform 
+#if debug
+implements RadComp
+#end
 {
 
 	public var x : Float = 0;

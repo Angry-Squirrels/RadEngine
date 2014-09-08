@@ -43,7 +43,8 @@ implements RadComp
 	
 	public function unEdit():Void 
 	{
-		mView.removeChild(mBox);
+		if(mView != null)
+			mView.removeChild(mBox);
 	}
 	
 	public function setView(sprite : Sprite) {

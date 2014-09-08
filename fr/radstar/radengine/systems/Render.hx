@@ -13,7 +13,10 @@ import openfl.Lib;
  * ...
  * @author TBaudon
  */
-class Render extends ListIteratingSystem<RenderNode> implements RadSystem
+class Render extends ListIteratingSystem<RenderNode> 
+#if debug
+implements RadSystem
+#end
 {
 	
 	var mCanvas : Sprite;
@@ -35,7 +38,7 @@ class Render extends ListIteratingSystem<RenderNode> implements RadSystem
 	}
 	
 	/* INTERFACE fr.radstar.radengine.systems.RadSystem */
-	
+	#if debug
 	public function enterEditMode() 
 	{
 		mEditMode = true;
@@ -61,6 +64,7 @@ class Render extends ListIteratingSystem<RenderNode> implements RadSystem
 		var entity = mViewMap[view].entity;
 		RadGame.instance.selectEntity(entity);
 	}
+	#end
 	
 	function onNodeRemoved(node : RenderNode) 
 	{

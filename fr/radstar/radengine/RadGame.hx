@@ -25,7 +25,7 @@ class RadGame extends Sprite
 	
 	public static var instance : RadGame;
 
-	public function new() 
+	public function new(firstScene : String) 
 	{
 		super();
 		
@@ -36,6 +36,8 @@ class RadGame extends Sprite
 		mLastTime = Lib.getTimer();
 		
 		mEngine = new Engine();
+		
+		loadScene(firstScene);
 		
 		#if debug
 		initDebugTools();
@@ -50,6 +52,8 @@ class RadGame extends Sprite
 		console.addCommad(this, editMode, 'edit');
 		console.addCommad(this, selectEntityByName, 'select');
 		console.addCommad(this, saveScene, 'save');
+		console.addCommad(this, createEntity, 'create');
+		console.addCommad(this, addComponent, 'add');
 	}
 	
 	function editMode(bool : Bool) {
@@ -71,7 +75,19 @@ class RadGame extends Sprite
 	
 	function saveScene(name : String) {
 		if (mCurrentScene != null)
-			mCurrentScene.save(name);
+			mCurrentScene.save(name, mEngine);
+	}
+	
+	function addComponent(name : String) {
+		var comp = Type.createInstance(Type.resolveClass('fr.radstar.radengine.components.' + name), []);
+		mSelectedEntity.add(comp);
+	}
+	
+	function createEntity(name : String) : Entity {
+		var ent = new Entity(name);
+		mEngine.addEntity(ent);
+		selectEntity(ent);
+		return ent;
 	}
 	#end
 	
@@ -113,7 +129,9 @@ class RadGame extends Sprite
 	}
 	
 	public function gotoScene(scene : Scene) {
+		#if debug
 		editMode(false);
+		#end
 		// clear all systems and entity
 		mEngine.removeAllEntities();
 		mEngine.removeAllSystems();

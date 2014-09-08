@@ -5,6 +5,7 @@ import ash.core.System;
 import haxe.io.Path;
 import haxe.Json;
 import openfl.Assets;
+
 import sys.io.File;
 
 /**
@@ -16,10 +17,9 @@ class Scene
 	
 	var mPath : Path;
 	
-	
 	var mSystems : Array<System>;
 	var mEntitys : Array<Entity>;
-
+	
 	public function new(sceneName : String) 
 	{
 		mPath = new Path("scenes/" + sceneName + ".json");
@@ -51,8 +51,14 @@ class Scene
 		
 	}
 	
-	public function save(name : String)
+	public function save(name : String, engine : Engine)
 	{
+		mSystems = new Array<System>();
+		for (system in engine.systems) mSystems.push(system);
+		
+		mEntitys = new Array<Entity>();
+		for (entity in engine.entities) mEntitys.push(entity);
+		
 		var sysTab = new Array<String>();
 		for (system in mSystems) {
 			var name = Type.getClassName(Type.getClass(system));
