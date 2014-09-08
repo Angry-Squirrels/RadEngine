@@ -4,12 +4,18 @@ import ash.core.Engine;
 import ash.core.Entity;
 import ash.core.System;
 import fr.radstar.radengine.components.RadComp;
+import fr.radstar.radengine.editor.Button;
+import fr.radstar.radengine.editor.Label;
+import fr.radstar.radengine.editor.ScrollPane;
+import fr.radstar.radengine.editor.VScrollBar;
 import fr.radstar.radengine.systems.RadSystem;
 import fr.radstar.radengine.tools.Console;
 import haxe.Json;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.events.KeyboardEvent;
 import openfl.Lib;
+import openfl.ui.Keyboard;
 
 /**
  * ...
@@ -25,6 +31,8 @@ class RadGame extends Sprite
 	var mSelectedEntity : Entity;
 	var mStop : Bool;
 	
+	var mEditorLayer : Sprite;
+	
 	public static var instance : RadGame;
 
 	public function new(firstScene : String) 
@@ -34,6 +42,8 @@ class RadGame extends Sprite
 		instance = this;
 		
 		mStop = false;
+		
+		mEditorLayer = new Sprite();
 		
 		Lib.current.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		
@@ -49,21 +59,56 @@ class RadGame extends Sprite
 	}
 	
 	#if debug
+	
+	var mConsole : Console;
+	
 	function initDebugTools() 
 	{
-		var console = new Console(this, mEngine);
-		console.addCommad(this, loadScene, 'load');
-		console.addCommad(this, editMode, 'edit');
-		console.addCommad(this, selectEntityByName, 'select');
-		console.addCommad(this, saveScene, 'save');
-		console.addCommad(this, createEntity, 'create');
-		console.addCommad(this, addComponent, 'add');
-		console.addCommad(this, createScene, 'createScene');
-		console.addCommad(this, addSystem, 'addSystem');
-		console.addCommad(this, editComp, 'editComp');
-		console.addCommad(this, stop, 'stop');
-		console.addCommad(this, resume, 'resume');
-		console.addCommad(this, pause, 'pause');
+		mConsole = new Console(this, mEngine);
+		mConsole.addCommad(this, loadScene, 'load');
+		mConsole.addCommad(this, editMode, 'edit');
+		mConsole.addCommad(this, selectEntityByName, 'select');
+		mConsole.addCommad(this, saveScene, 'save');
+		mConsole.addCommad(this, createEntity, 'create');
+		mConsole.addCommad(this, addComponent, 'add');
+		mConsole.addCommad(this, createScene, 'createScene');
+		mConsole.addCommad(this, addSystem, 'addSystem');
+		mConsole.addCommad(this, editComp, 'editComp');
+		mConsole.addCommad(this, stop, 'stop');
+		mConsole.addCommad(this, resume, 'resume');
+		mConsole.addCommad(this, pause, 'pause');
+		
+		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDebugDown);
+		
+		var a = new ScrollPane();
+		//a.setDim(150, 50);
+		
+		for (i in 0 ... 20) {
+			var btn = new Button();
+			btn.add(new Label("Bonjour " + i));
+			a.add(btn);
+			btn.y = i * btn.height;
+		}
+		
+		a.setDim(a.width + 5, 150);
+		
+		var scroll = new VScrollBar();
+		scroll.connect(a);
+		mEditorLayer.addChild(scroll);
+		scroll.x = a.width;
+		
+		mEditorLayer.addChild(a);
+	}
+	
+	private function onKeyDebugDown(e:KeyboardEvent):Void 
+	{
+		if (e.keyCode == Keyboard.D && e.ctrlKey == true && e.altKey == true) {
+			e.stopImmediatePropagation();
+			var v = mConsole.toggleVisibility();
+			editMode(v);
+			if (v)
+				Lib.current.stage.focus = mConsole.getInput();
+		}
 	}
 	
 	function editMode(edit : Bool) {
@@ -76,12 +121,18 @@ class RadGame extends Sprite
 				var system : RadSystem = cast current;
 				if (mEditMode) 
 					system.enterEditMode();
-				else
+				else{
 					system.leaveEditMode();
+					Lib.current.stage.removeChild(mEditorLayer);
+				}
 			}
 		}
 		
-		if (!edit) selectEntity(null);
+		if (!mEditMode) {
+			selectEntity(null);
+			resume();
+		}
+		else pause();
 	}
 	
 	function editComp(name : String, prop : String, value : Dynamic) {
@@ -143,6 +194,10 @@ class RadGame extends Sprite
 				current.resume();
 			}
 	}
+	
+	public function getEditorLayer() : Sprite {
+		return mEditorLayer;
+	}
 	#end
 	
 	public function getSelectedEntity() : Entity {
@@ -183,9 +238,6 @@ class RadGame extends Sprite
 	}
 	
 	public function gotoScene(scene : Scene) {
-		#if debug
-		editMode(false);
-		#end
 		// clear all systems and entity
 		mEngine.removeAllEntities();
 		mEngine.removeAllSystems();
@@ -210,6 +262,11 @@ class RadGame extends Sprite
 			mEngine.update(delta);
 		}
 		
+		#if debug
+		if(mEditMode){
+			Lib.current.stage.addChild(mEditorLayer);
+		}
+		#end
 	}
 	
 }

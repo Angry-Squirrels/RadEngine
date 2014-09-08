@@ -52,13 +52,13 @@ implements RadComp
 		mGizmo.graphics.clear();
 		mGizmo.graphics.beginFill(0x00ff00,0.5);
 		mGizmo.graphics.lineStyle(1, 0x00ff00);
-		mGizmo.graphics.drawRect(0, -20, 20, 20);
+		mGizmo.graphics.drawRect(-30, -30, 60, 60);
 		mGizmo.graphics.endFill();
 		mGizmo.graphics.lineStyle(3, 0xcccc00);
-		mGizmo.graphics.moveTo(0, 0);
+		mGizmo.graphics.moveTo(0, 30);
 		mGizmo.graphics.lineTo(0, -30);
 		mGizmo.graphics.lineStyle(3, 0x0000cc);
-		mGizmo.graphics.moveTo(0, 0);
+		mGizmo.graphics.moveTo(-30, 0);
 		mGizmo.graphics.lineTo(30, 0);
 		
 		mGizmo.addEventListener(MouseEvent.MOUSE_DOWN, onMDown);

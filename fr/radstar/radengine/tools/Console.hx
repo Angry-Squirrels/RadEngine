@@ -16,7 +16,7 @@ import openfl.ui.Keyboard;
  * ...
  * @author Thomas B
  */
-class Console extends Sprite
+class Console
 {
 	var mVisible : Bool;
 	var mGame : RadGame;
@@ -31,8 +31,6 @@ class Console extends Sprite
 
 	public function new(game : RadGame, engine : Engine) 
 	{
-		super();
-		
 		mGame = game;
 		mEngine = engine;
 		mCommandHistoy = new Array<String>();
@@ -47,8 +45,26 @@ class Console extends Sprite
 		mVisible = false;
 	}
 	
+	public function getInput() : TextField {
+		return mInput;
+	}
+	
 	public function addCommad(object : Dynamic, func : Dynamic, alias : String) {
 		mCommands[alias] = {target : object, method : func};
+	}
+	
+	public function toggleVisibility() : Bool {
+		mVisible = !mVisible; 
+		
+		if (mVisible) {
+			RadGame.instance.getEditorLayer().addChild(mInput);
+			updateSize();
+			Lib.current.stage.focus = mInput;
+		}
+		else
+			RadGame.instance.getEditorLayer().removeChild(mInput);
+			
+		return mVisible;
 	}
 	
 	function updateSize(e : Event = null) {
@@ -59,20 +75,7 @@ class Console extends Sprite
 	
 	function onKeyDown(e:KeyboardEvent):Void 
 	{
-		if (e.keyCode == Keyboard.D && e.ctrlKey && e.altKey) {
-			
-			e.stopImmediatePropagation();
-			
-			mVisible = !mVisible;
-			
-			if (mVisible){
-				Lib.current.stage.addChild(this);
-				Lib.current.stage.focus = mInput;
-				updateSize();
-			}
-			else
-				Lib.current.stage.removeChild(this);
-		}else if (e.keyCode == Keyboard.ENTER && mVisible) {
+		if (e.keyCode == Keyboard.ENTER && mVisible) {
 			e.stopImmediatePropagation();
 			
 			var command = mInput.text;
@@ -130,7 +133,7 @@ class Console extends Sprite
 		mInput.borderColor = 0x00ff00;
 		mInput.alpha = 0.8;
 		updateSize();
-		addChild(mInput);
+		//addChild(mInput);
 	}
 	
 }
