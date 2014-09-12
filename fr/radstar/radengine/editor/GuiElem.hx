@@ -50,6 +50,13 @@ class GuiElem extends Sprite
 		invalidate();
 	}
 	
+	public function remove(elem : GuiElem) {
+		mChildren.remove(elem);
+		mAddTarget.removeChild(elem);
+		
+		invalidate();
+	}
+	
 	public function setDim(width : Float, height : Float) {
 		mWidth = width;
 		mHeight = height;

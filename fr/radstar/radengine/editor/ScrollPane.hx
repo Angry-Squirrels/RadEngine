@@ -35,6 +35,13 @@ class ScrollPane extends GuiElem
 		
 		mScrollRegion.mask = mScrollMask;
 		
+		for (bar in mConnectedBar) {
+			if (Std.is(bar, VScrollBar)) {
+				bar.x = width + 2;
+				bar.setDim(bar.width, height);
+			}
+		}
+		
 		super.setDim(w,h);
 	}
 	

@@ -5,6 +5,7 @@ import ash.core.Entity;
 import ash.core.System;
 import fr.radstar.radengine.components.RadComp;
 import fr.radstar.radengine.editor.Button;
+import fr.radstar.radengine.editor.Editor;
 import fr.radstar.radengine.editor.Label;
 import fr.radstar.radengine.editor.ScrollPane;
 import fr.radstar.radengine.editor.VScrollBar;
@@ -31,7 +32,7 @@ class RadGame extends Sprite
 	var mSelectedEntity : Entity;
 	var mStop : Bool;
 	
-	var mEditorLayer : Sprite;
+	var mRenderZone : Sprite;
 	
 	public static var instance : RadGame;
 
@@ -43,27 +44,41 @@ class RadGame extends Sprite
 		
 		mStop = false;
 		
-		mEditorLayer = new Sprite();
-		
-		Lib.current.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
-		
-		mLastTime = Lib.getTimer();
-		
 		mEngine = new Engine();
+		
+		mRenderZone = new Sprite();
+		addChild(mRenderZone);
 		
 		loadScene(firstScene);
 		
 		#if debug
 		initDebugTools();
 		#end
+		
+		Lib.current.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+		
+		mLastTime = Lib.getTimer();
+		
+	}
+	
+	public function getRenderZone() : Sprite {
+		return mRenderZone;
+	}
+	
+	public static function getView() : Sprite {
+		return instance.getRenderZone();
 	}
 	
 	#if debug
 	
 	var mConsole : Console;
+	var mEditor : Editor;
+	var mEditorLayer : Sprite;
 	
 	function initDebugTools() 
 	{
+		mEditorLayer = new Sprite();
+		
 		mConsole = new Console(this, mEngine);
 		mConsole.addCommad(this, loadScene, 'load');
 		mConsole.addCommad(this, editMode, 'edit');
@@ -80,24 +95,7 @@ class RadGame extends Sprite
 		
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDebugDown);
 		
-		var a = new ScrollPane();
-		//a.setDim(150, 50);
-		
-		for (i in 0 ... 20) {
-			var btn = new Button();
-			btn.add(new Label("Bonjour " + i));
-			a.add(btn);
-			btn.y = i * btn.height;
-		}
-		
-		a.setDim(a.width + 5, 150);
-		
-		var scroll = new VScrollBar();
-		scroll.connect(a);
-		mEditorLayer.addChild(scroll);
-		scroll.x = a.width;
-		
-		mEditorLayer.addChild(a);
+		mEditor = new Editor(mEngine, this);
 	}
 	
 	private function onKeyDebugDown(e:KeyboardEvent):Void 
@@ -106,8 +104,12 @@ class RadGame extends Sprite
 			e.stopImmediatePropagation();
 			var v = mConsole.toggleVisibility();
 			editMode(v);
-			if (v)
+			if (v){
 				Lib.current.stage.focus = mConsole.getInput();
+				mEditor.show();
+			}else {
+				mEditor.hide();
+			}
 		}
 	}
 	
@@ -132,7 +134,9 @@ class RadGame extends Sprite
 			selectEntity(null);
 			resume();
 		}
-		else pause();
+		else {
+			pause();
+		}
 	}
 	
 	function editComp(name : String, prop : String, value : Dynamic) {

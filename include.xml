@@ -3,7 +3,10 @@
 	<haxelib name="openfl" />
 	<haxelib name="ash" />
 	<haxelib name="hscript" />
+	<haxelib name="haxeui" />
 	
 	<haxeflag name="--macro include('fr.radstar.radengine.components', true)" />
 	<haxeflag name="--macro include('fr.radstar.radengine.systems', true)" />
+	
+	<assets path="assets/editor" rename="editor" />
 </project>

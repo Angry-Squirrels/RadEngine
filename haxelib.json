@@ -9,6 +9,7 @@
     "dependencies" : { 
 		"openfl" : "",
 		"ash" : "",
-		"hscript" : ""
+		"hscript" : "";
+		"haxeui" :""
 	}
 }
