@@ -3,12 +3,9 @@ package fr.radstar.radengine;
 import ash.core.Engine;
 import ash.core.Entity;
 import ash.core.System;
+import fr.radstar.radengine.command.Commander;
 import fr.radstar.radengine.components.RadComp;
-import fr.radstar.radengine.editor.Button;
 import fr.radstar.radengine.editor.Editor;
-import fr.radstar.radengine.editor.Label;
-import fr.radstar.radengine.editor.ScrollPane;
-import fr.radstar.radengine.editor.VScrollBar;
 import fr.radstar.radengine.systems.RadSystem;
 import fr.radstar.radengine.tools.Console;
 import haxe.Json;
@@ -29,10 +26,10 @@ class RadGame extends Sprite
 	var mLastTime : Int;
 	var mEngine : Engine;
 	var mEditMode : Bool;
-	var mSelectedEntity : Entity;
-	var mStop : Bool;
 	
-	var mRenderZone : Sprite;
+	var mSelectedEntity : Entity;
+	
+	var mStop : Bool;
 	
 	public static var instance : RadGame;
 
@@ -46,9 +43,6 @@ class RadGame extends Sprite
 		
 		mEngine = new Engine();
 		
-		mRenderZone = new Sprite();
-		addChild(mRenderZone);
-		
 		loadScene(firstScene);
 		
 		#if debug
@@ -60,38 +54,32 @@ class RadGame extends Sprite
 		mLastTime = Lib.getTimer();
 		
 	}
-	
-	public function getRenderZone() : Sprite {
-		return mRenderZone;
-	}
-	
-	public static function getView() : Sprite {
-		return instance.getRenderZone();
-	}
-	
 	#if debug
 	
 	var mConsole : Console;
 	var mEditor : Editor;
-	var mEditorLayer : Sprite;
+	var mCommander : Commander;
 	
 	function initDebugTools() 
 	{
-		mEditorLayer = new Sprite();
+		mCommander = Commander.getInstance();
 		
 		mConsole = new Console(this, mEngine);
-		mConsole.addCommad(this, loadScene, 'load');
-		mConsole.addCommad(this, editMode, 'edit');
-		mConsole.addCommad(this, selectEntityByName, 'select');
-		mConsole.addCommad(this, saveScene, 'save');
-		mConsole.addCommad(this, createEntity, 'create');
-		mConsole.addCommad(this, addComponent, 'add');
-		mConsole.addCommad(this, createScene, 'createScene');
-		mConsole.addCommad(this, addSystem, 'addSystem');
-		mConsole.addCommad(this, editComp, 'editComp');
-		mConsole.addCommad(this, stop, 'stop');
-		mConsole.addCommad(this, resume, 'resume');
-		mConsole.addCommad(this, pause, 'pause');
+		mConsole.setCommander(mCommander);
+		
+		mCommander.add(this, loadScene, 'load');
+		mCommander.add(this, editMode, 'edit');
+		mCommander.add(this, selectEntityByName, 'select');
+		mCommander.add(this, saveScene, 'save');
+		mCommander.add(this, createEntity, 'create');
+		mCommander.add(this, addComponent, 'add');
+		mCommander.add(this, createScene, 'createScene');
+		mCommander.add(this, addSystem, 'addSystem');
+		mCommander.add(this, editComp, 'editComp');
+		mCommander.add(this, stop, 'stop');
+		mCommander.add(this, resume, 'resume');
+		mCommander.add(this, pause, 'pause');
+		mCommander.add(this, removeEntity, 'remove');
 		
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDebugDown);
 		
@@ -125,7 +113,6 @@ class RadGame extends Sprite
 					system.enterEditMode();
 				else{
 					system.leaveEditMode();
-					Lib.current.stage.removeChild(mEditorLayer);
 				}
 			}
 		}
@@ -163,6 +150,11 @@ class RadGame extends Sprite
 		return ent;
 	}
 	
+	function removeEntity() {
+		mEngine.removeEntity(mSelectedEntity);
+		mSelectedEntity = null;
+	}
+	
 	function createScene(name : String) {
 		var scene = new Scene(name, false);
 		gotoScene(scene);
@@ -197,10 +189,6 @@ class RadGame extends Sprite
 				var current : RadSystem = cast system;
 				current.resume();
 			}
-	}
-	
-	public function getEditorLayer() : Sprite {
-		return mEditorLayer;
 	}
 	#end
 	
@@ -265,12 +253,6 @@ class RadGame extends Sprite
 			mCurrentScene.update(delta);
 			mEngine.update(delta);
 		}
-		
-		#if debug
-		if(mEditMode){
-			Lib.current.stage.addChild(mEditorLayer);
-		}
-		#end
 	}
 	
 }

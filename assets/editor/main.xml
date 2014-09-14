@@ -4,7 +4,7 @@
         <menubutton text="Scene" id="menuFile">
             <menu>
                 <menuitem text="new" id="menuNew" />
-           <menuitem text="save" id="menuSave" />
+				<menuitem text="save" id="menuSave" />
                 <menuitem text="load" id="menuLoad" />
             </menu>
         </menubutton>

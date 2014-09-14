@@ -1,6 +1,7 @@
 package fr.radstar.radengine.tools;
 
 import ash.core.Engine;
+import fr.radstar.radengine.command.Commander;
 import fr.radstar.radengine.RadGame;
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -24,6 +25,8 @@ class Console
 	
 	var mInput : TextField;
 	
+	var mCommander : Commander;
+	
 	var mCommands : Map<String, {target : Dynamic, method : Dynamic}>;
 	
 	var mCommandHistoy : Array<String>;
@@ -45,6 +48,10 @@ class Console
 		mVisible = false;
 	}
 	
+	public function setCommander(commander : Commander) {
+		mCommander = commander;
+	}
+	
 	public function getInput() : TextField {
 		return mInput;
 	}
@@ -57,12 +64,12 @@ class Console
 		mVisible = !mVisible; 
 		
 		if (mVisible) {
-			RadGame.instance.getEditorLayer().addChild(mInput);
+			//RadGame.instance.getEditorLayer().addChild(mInput);
 			updateSize();
 			Lib.current.stage.focus = mInput;
 		}
-		else
-			RadGame.instance.getEditorLayer().removeChild(mInput);
+		//else
+			//RadGame.instance.getEditorLayer().removeChild(mInput);
 			
 		return mVisible;
 	}
