@@ -74,6 +74,7 @@ class Editor extends XMLController
 	function bindEvents() 
 	{
 		attachEvent("menuScene", MenuEvent.SELECT, onSceneSelect);
+		attachEvent("menuEntity", MenuEvent.SELECT, onEntitySelect);
 		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
 		attachEvent("stop", UIEvent.CLICK, onStop);
 		attachEvent("entities", UIEvent.CLICK, onEntityListClicked);
@@ -234,9 +235,18 @@ class Editor extends XMLController
 			case 'saveScene' :
 				mCommander.exec("save", []);
 			case 'newScene' :
-				//mCommander.exec("createScene", ["test"]);
-				//askParams([{name:"name", fieldClass:TextInput}]);
 				commandWithParam("createScene", [ { name:"name", fieldClass:TextInput } ]);
+			case 'loadScene' : 
+				commandWithParam("load", [ { name:"name", fieldClass:TextInput } ]);
+		}
+	}
+	
+	function onEntitySelect(e:MenuEvent):Void 
+	{
+		switch(e.menuItem.id) {
+			case 'createEntity' :
+				commandWithParam("create", [ { name:"name", fieldClass:TextInput } ]);
+
 		}
 	}
 	
