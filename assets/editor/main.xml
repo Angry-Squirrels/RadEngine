@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <vbox width="100%" height="100%">
     <menubar>
+        <menubutton text="Edit" id="menuEdit">
+            <menu>
+                <menuitem text="copy" id="copyEdit" />
+                <menuitem text="cut" id="cutEdit" />
+                <menuitem text="past" id="pastEdit" />
+            </menu>
+        </menubutton>   
         <menubutton text="Scene" id="menuScene">
             <menu>
                 <menuitem text="New" id="newScene" />
@@ -21,10 +28,14 @@
     <hbox width="100%" height="100%">
         <vbox height="100%" width="10%">
             <text text="Entities" />
-            <listview id="entities" width="100%" height="100%">    
+            <listview id="entities" width="100%" height="25%">    
             </listview>
+            <text text="Components" />
+            <Accordion id="components" width="100%" height="75%">    
+            </Accordion>
         </vbox>
         <absolute id="renderZone" width="100%" height="100%">
         </absolute>
+
     </hbox>
 </vbox>

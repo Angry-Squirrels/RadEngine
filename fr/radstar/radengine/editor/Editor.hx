@@ -7,6 +7,8 @@ import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.ListView;
 import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Menu;
+import haxe.ui.toolkit.controls.Text;
+import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.Component;
 import haxe.ui.toolkit.core.Root;
 import haxe.ui.toolkit.core.Toolkit;
@@ -75,9 +77,50 @@ class Editor extends XMLController
 	
 	function bindEvents() 
 	{
-		attachEvent("menuScene", MenuEvent.SELECT, onFileSelect);
+		attachEvent("menuScene", MenuEvent.SELECT, onSceneSelect);
 		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
 		attachEvent("stop", UIEvent.CLICK, onStop);
+		attachEvent("entities", UIEvent.CLICK, onEntityListClicked);
+	}
+	
+	function onEntityListClicked(e : UIEvent) 
+	{
+		var list : ListView = cast getComponent("entities");
+		var entity : Entity = list.getItem(list.selectedIndex).data.userData;
+		onEntitySelected(entity);
+	}
+	
+	function onEntitySelected(entity : Entity) {
+		mCommander.exec("select", [entity.name]);
+		initComponentList(entity);
+	}
+	
+	function initComponentList(ent : Entity) 
+	{
+		var compList : Accordion = cast getComponent("components");
+		compList.removeAllChildren();
+		
+		for (comp in ent.components) {
+			var vbox = new VBox();
+			var name = Type.getClassName(Type.getClass(comp));
+			var nameSplit = name.split('.');
+			name = nameSplit[nameSplit.length - 1];
+			vbox.text = name;
+			compList.addChild(vbox);
+			for (field in Reflect.fields(comp)) {
+				var fieldName : String = cast field;
+				if (fieldName.indexOf("m") != 0)
+				{
+					var text : Text = new Text();
+					text.text = fieldName;
+					var input : TextInput = new TextInput();
+					input.text = Reflect.getProperty(comp, field);
+					input.percentWidth = 100;
+					vbox.addChild(text);
+					vbox.addChild(input);
+				}
+			}
+		}
 	}
 	
 	function onPlayPauseClicked(e : UIEvent) 
@@ -100,11 +143,13 @@ class Editor extends XMLController
 		mCommander.exec("stop");
 	}
 	
-	function onFileSelect(e:MenuEvent):Void 
+	function onSceneSelect(e:MenuEvent):Void 
 	{
 		switch(e.menuItem.id) {
 			case 'saveScene' :
 				mCommander.exec("save", []);
+			case 'newScene' :
+				mCommander.exec("createScene", ["test"]);
 		}
 	}
 	
