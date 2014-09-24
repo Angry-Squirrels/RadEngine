@@ -115,11 +115,25 @@ class Editor extends XMLController
 					text.text = fieldName;
 					var input : TextInput = new TextInput();
 					input.text = Reflect.getProperty(comp, field);
+					input.userData = { component: comp, field:fieldName };
 					input.percentWidth = 100;
+					input.addEventListener(UIEvent.CHANGE, onCompFieldChanged);
 					vbox.addChild(text);
 					vbox.addChild(input);
 				}
 			}
+		}
+	}
+	
+	function onCompFieldChanged(e:UIEvent):Void 
+	{
+		var input : TextInput =cast e.displayObject;
+		try {
+			var comp = input.userData.component;
+			var field = input.userData.field;
+			Reflect.setProperty(comp, field, input.value);
+		}catch (e : Dynamic) {
+			trace(e);
 		}
 	}
 	
