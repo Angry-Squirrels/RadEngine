@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <vbox width="100%" height="100%">
     <menubar>
-        <menubutton text="Scene" id="menuFile">
+        <menubutton text="Scene" id="menuScene">
             <menu>
-                <menuitem text="new" id="menuNew" />
-				<menuitem text="save" id="menuSave" />
-                <menuitem text="load" id="menuLoad" />
+                <menuitem text="New" id="newScene" />
+                <menuitem text="Save" id="saveScene" />
+                <menuitem text="Load" id="loadScene" />
             </menu>
         </menubutton>
         <menubutton text="Entity" id="menuEntity">
             <menu>
-                <menuitem text="create" id="menuCreate" />
-                <menuitem text="load" id="menuLoadEnt" />
-                <menuitem text="save" id="menuSaveEnt" />
+                <menuitem text="New" id="createEntity" />
+                <menuitem text="Save" id="saveEntity" />
+                <menuitem text="Load" id="loadEntity" />
             </menu>
-        </menubutton>    
+        </menubutton>   
+        <button text="play" id="play/pause" toggle="true"/>   
+        <button text="stop" id="stop" /> 
     </menubar>
     <hbox width="100%" height="100%">
         <vbox height="100%" width="10%">

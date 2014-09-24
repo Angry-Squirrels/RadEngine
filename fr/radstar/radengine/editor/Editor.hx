@@ -50,6 +50,8 @@ class Editor extends XMLController
 		mEngine = engine;
 		mEngine.entityAdded.add(onEntityAdded);
 		mEngine.entityRemoved.add(onEntityRemoved);
+
+		bindEvents();
 	}
 	
 	public function show() {
@@ -57,36 +59,65 @@ class Editor extends XMLController
 		var comp : Component = getComponent("renderZone");
 		comp.clipContent = true;
 		comp.sprite.addChild(RadGame.instance);
+		initEntityList();
 	}
 	
 	public function hide() {
 		mRoot.removeChild(this.view, false);
 		Lib.current.stage.addChild(RadGame.instance);
+		clearEntityList();
 	}
 	
 	function initToolkit(root : Root) {				
 		mRoot = root;
 		mRoot.addChild(this.view);
-		mRoot.addEventListener(UIEvent.INIT, onReady);
-	}
-	
-	function onReady(e : UIEvent) {
-		bindEvents();
 	}
 	
 	function bindEvents() 
 	{
-		var saveItem : Menu = cast getComponent("menuFile");
-		trace(saveItem != null);
-		//saveItem.addEventListener(MenuEvent.SELECT, onFileSelect);
+		attachEvent("menuScene", MenuEvent.SELECT, onFileSelect);
+		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
+		attachEvent("stop", UIEvent.CLICK, onStop);
+	}
+	
+	function onPlayPauseClicked(e : UIEvent) 
+	{
+		var playPause : Button = cast getComponent("play/pause");
+		if (playPause.selected){
+			playPause.text = "play";
+			mCommander.exec("pause");
+		}
+		else{
+			playPause.text = "pause";
+			mCommander.exec("resume");
+		}
+	}
+	
+	function onStop(e : UIEvent) {
+		var playPause : Button = cast getComponent("play/pause");
+		playPause.text = "play";
+		playPause.selected = false;
+		mCommander.exec("stop");
 	}
 	
 	function onFileSelect(e:MenuEvent):Void 
 	{
 		switch(e.menuItem.id) {
-			case 'menuSave' :
+			case 'saveScene' :
 				mCommander.exec("save", []);
 		}
+	}
+	
+	function initEntityList() {
+		var list : ListView = cast getComponent("entities");
+		for (ent in mEngine.entities) {
+			list.dataSource.add( { text: ent.name, userData: ent } );
+		}
+	}
+	
+	function clearEntityList() {
+		var list : ListView = cast getComponent("entities");
+		list.dataSource.removeAll();
 	}
 	
 	function onEntityRemoved(ent : Entity) 

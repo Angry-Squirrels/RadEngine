@@ -25,19 +25,18 @@ class Commander
 		mCommands = new Map<String, {target : Dynamic, method : Dynamic}>();
 	}
 	
-	public function add(ohject : Dynamic, func : Dynamic, alias : String) {
-		mCommands[alias] = { target : ohject, method : func };
+	public function add(object : Dynamic, func : Dynamic, alias : String) {
+		mCommands[alias] = { target : object, method : func };
 	}
 	
 	public function remove(alias : String) {
 		mCommands[alias] = null;
 	}
 	
-	public function exec(command : String, params : Array<Dynamic>) {
+	public function exec(command : String, params : Array<Dynamic> = null) {
 		var current = mCommands[command];
 		if (current != null) {
 			try {
-				trace(current.target, current.method);
 				Reflect.callMethod(current.target, current.method, params);
 			}catch (e : Dynamic) {
 				trace(e);
