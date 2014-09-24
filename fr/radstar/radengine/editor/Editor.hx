@@ -271,7 +271,6 @@ class Editor extends XMLController
 	
 	function onEntityAdded(ent : Entity) {
 		var list : ListView = cast getComponent("entities") ;
-		list.dataSource.add( { text: ent.name, userData: ent } );
+		list.dataSource.add({ text: ent.name, userData: ent });
 	}
-	
 }
