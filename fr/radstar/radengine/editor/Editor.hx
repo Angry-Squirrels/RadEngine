@@ -6,6 +6,7 @@ import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.ListView;
 import haxe.ui.toolkit.containers.VBox;
+import haxe.ui.toolkit.controls.CheckBox;
 import haxe.ui.toolkit.controls.Menu;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
@@ -24,6 +25,7 @@ import openfl.events.Event;
 import haxe.ui.toolkit.controls.Button;
 import openfl.events.MouseEvent;
 import openfl.Lib;
+import Type;
 
 /**
  * ...
@@ -111,27 +113,100 @@ class Editor extends XMLController
 				var fieldName : String = cast field;
 				if (fieldName.indexOf("m") != 0)
 				{
-					var text : Text = new Text();
-					text.text = fieldName;
-					var input : TextInput = new TextInput();
-					input.text = Reflect.getProperty(comp, field);
-					input.userData = { component: comp, field:fieldName };
-					input.percentWidth = 100;
-					input.addEventListener(UIEvent.CHANGE, onCompFieldChanged);
-					vbox.addChild(text);
-					vbox.addChild(input);
+					var inputType : ValueType = Type.typeof(Reflect.field(comp, field));
+					
+					switch (inputType) {
+						case ValueType.TBool :
+							var check : CheckBox = new CheckBox();
+							var value : Bool = Reflect.getProperty(comp, field);
+							check.selected = value;
+							check.text = field;
+							check.userData = { component: comp, field:fieldName };
+							check.addEventListener(UIEvent.CHANGE, onChangeCheckBox);
+							check.percentWidth = 100;
+							vbox.addChild(check);
+						
+						case ValueType.TFloat :
+							var text : Text = new Text();
+							text.text = field;
+							vbox.addChild(text);
+							
+							var inputFloat = new TextInput();
+							inputFloat.text = Reflect.getProperty(comp, field);
+							inputFloat.userData = { component: comp, field:fieldName };
+							inputFloat.addEventListener(UIEvent.CHANGE, onChangeFloat);
+							inputFloat.percentWidth = 100;
+							vbox.addChild(inputFloat);
+						
+						case ValueType.TInt :
+							var text : Text = new Text();
+							text.text = field;
+							vbox.addChild(text);
+							
+							var inputInt = new TextInput();
+							inputInt.text = Reflect.getProperty(comp, field);
+							inputInt.userData = { component: comp, field:fieldName };
+							inputInt.addEventListener(UIEvent.CHANGE, onChangeInt);
+							inputInt.percentWidth = 100;
+							vbox.addChild(inputInt);
+							
+						default :
+							/*input = new TextInput();
+							input.value = Reflect.getProperty(comp, field);*/
+					}
 				}
 			}
 		}
 	}
 	
-	function onCompFieldChanged(e:UIEvent):Void 
-	{
-		var input : TextInput =cast e.displayObject;
+	function onChangeCheckBox(e:UIEvent):Void {
+		var checkBox : CheckBox = cast e.displayObject;
 		try {
-			var comp = input.userData.component;
-			var field = input.userData.field;
-			Reflect.setProperty(comp, field, input.value);
+			var comp = checkBox.userData.component;
+			var field = checkBox.userData.field;
+			Reflect.setProperty(comp, field, checkBox.selected);
+		}catch (e : Dynamic) {
+			trace(e);
+		}
+	}
+	
+	function onChangeFloat(e:UIEvent):Void {
+		var floatInput : TextInput = cast e.displayObject;
+		var allowedChar = "1234567890.-";
+		
+		var val : String = floatInput.text;
+		for (i in 0 ... val.length) {
+			if (allowedChar.indexOf(val.charAt(i)) == -1)
+				val = val.substr(0, i) + val.substr(i + 1);
+		}
+		
+		floatInput.text = val;
+		
+		try {
+			var comp = floatInput.userData.component;
+			var field = floatInput.userData.field;
+			Reflect.setProperty(comp, field, floatInput.text);
+		}catch (e : Dynamic) {
+			trace(e);
+		}
+	}
+		
+	function onChangeInt(e:UIEvent):Void {
+		var intInput : TextInput = cast e.displayObject;
+		var allowedChar = "1234567890-";
+		
+		var val : String = intInput.text;
+		for (i in 0 ... val.length) {
+			if (allowedChar.indexOf(val.charAt(i)) == -1)
+				val = val.substr(0, i) + val.substr(i + 1);
+		}
+		
+		intInput.text = val;
+		
+		try {
+			var comp = intInput.userData.component;
+			var field = intInput.userData.field;
+			Reflect.setProperty(comp, field, intInput.text);
 		}catch (e : Dynamic) {
 			trace(e);
 		}
