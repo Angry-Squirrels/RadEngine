@@ -4,7 +4,9 @@ import ash.core.Entity;
 import fr.radstar.radengine.command.Commander;
 import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.containers.Accordion;
+import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.ListView;
+import haxe.ui.toolkit.containers.ScrollView;
 import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.CheckBox;
@@ -100,65 +102,65 @@ class Editor extends XMLController
 		compList.removeAllChildren();
 		
 		for (comp in ent.components) {
-			var vbox = new VBox();
+			
+			var scrollView = new ScrollView();
+			scrollView.percentWidth = 100;
+			scrollView.percentHeight = 100;
+			
+			var grid = new Grid();
+			grid.columns = 2;
+			grid.percentWidth = 100;
+			scrollView.addChild(grid);
+			
 			var name = Type.getClassName(Type.getClass(comp));
 			var nameSplit = name.split('.');
 			name = nameSplit[nameSplit.length - 1];
-			vbox.text = name;
-			compList.addChild(vbox);
+			
+			scrollView.text = name;
+			
+			compList.addChild(scrollView);
+			
 			for (field in Reflect.fields(comp)) {
 				var fieldName : String = cast field;
 				if (fieldName.indexOf("m") != 0)
 				{
 					var inputType : ValueType = Type.typeof(Reflect.field(comp, field));
 					
+					var fieldTxt : Text = new Text();
+					fieldTxt.text = field;
+					grid.addChild(fieldTxt);
+					
+					var input : Component;
+					
 					switch (inputType) {
 						case ValueType.TBool :
 							var check : CheckBox = new CheckBox();
 							var value : Bool = Reflect.getProperty(comp, field);
 							check.selected = value;
-							check.text = field;
-							check.userData = { component: comp, field:fieldName };
 							check.addEventListener(UIEvent.CHANGE, onChangeCheckBox);
-							check.percentWidth = 100;
-							vbox.addChild(check);
+							input = check;
 						
 						case ValueType.TFloat :
-							var text : Text = new Text();
-							text.text = field;
-							vbox.addChild(text);
-							
 							var inputFloat = new TextInput();
 							inputFloat.text = Reflect.getProperty(comp, field);
-							inputFloat.userData = { component: comp, field:fieldName };
 							inputFloat.addEventListener(UIEvent.CHANGE, onChangeFloat);
-							inputFloat.percentWidth = 100;
-							vbox.addChild(inputFloat);
+							input = inputFloat;
 						
-						case ValueType.TInt :
-							var text : Text = new Text();
-							text.text = field;
-							vbox.addChild(text);
-							
+						case ValueType.TInt :					
 							var inputInt = new TextInput();
 							inputInt.text = Reflect.getProperty(comp, field);
-							inputInt.userData = { component: comp, field:fieldName };
 							inputInt.addEventListener(UIEvent.CHANGE, onChangeInt);
-							inputInt.percentWidth = 100;
-							vbox.addChild(inputInt);
+							input = inputInt;
 							
-						default :
-							var text : Text = new Text();
-							text.text = field;
-							vbox.addChild(text);
-							
-							var input = new TextInput();
+						default :							
+							input = new TextInput();
 							input.text = Reflect.getProperty(comp, field);
-							input.userData = { component: comp, field:fieldName };
 							input.addEventListener(UIEvent.CHANGE, onChangeDefault);
-							input.percentWidth = 100;
-							vbox.addChild(input);
 					}
+					
+					input.userData = { component: comp, field:fieldName };
+					input.percentWidth = 100;
+					grid.addChild(input);
 				}
 			}
 		}

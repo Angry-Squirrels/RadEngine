@@ -50,8 +50,8 @@
                 <listview id="entities" width="100%" height="25%">    
                 </listview>
                 <text text="Components" />
-                <Accordion id="components" width="100%" height="75%">    
-                </Accordion>
+				<Accordion id="components" width="100%" height="100%">    
+				</Accordion>
             </vbox>
             <vbox height="100%" width="100%" text="systems">
                 <Accordion id="systems" width="100%" height="100%">    
