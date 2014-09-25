@@ -6,24 +6,18 @@ import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.ListView;
 import haxe.ui.toolkit.containers.VBox;
+import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.CheckBox;
-import haxe.ui.toolkit.controls.Menu;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.Component;
+import haxe.ui.toolkit.core.PopupManager;
 import haxe.ui.toolkit.core.Root;
 import haxe.ui.toolkit.core.Toolkit;
-import haxe.ui.toolkit.core.xml.XMLProcessor;
 import haxe.ui.toolkit.core.XMLController;
 import haxe.ui.toolkit.events.MenuEvent;
 import haxe.ui.toolkit.events.UIEvent;
 import haxe.ui.toolkit.themes.GradientTheme;
-import haxe.ui.toolkit.util.XmlUtil;
-import openfl.display.Sprite;
-import openfl.display.Stage;
-import openfl.events.Event;
-import haxe.ui.toolkit.controls.Button;
-import openfl.events.MouseEvent;
 import openfl.Lib;
 import Type;
 
@@ -80,6 +74,7 @@ class Editor extends XMLController
 	function bindEvents() 
 	{
 		attachEvent("menuScene", MenuEvent.SELECT, onSceneSelect);
+		attachEvent("menuEntity", MenuEvent.SELECT, onEntitySelect);
 		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
 		attachEvent("stop", UIEvent.CLICK, onStop);
 		attachEvent("entities", UIEvent.CLICK, onEntityListClicked);
@@ -88,8 +83,10 @@ class Editor extends XMLController
 	function onEntityListClicked(e : UIEvent) 
 	{
 		var list : ListView = cast getComponent("entities");
-		var entity : Entity = list.getItem(list.selectedIndex).data.userData;
-		onEntitySelected(entity);
+		if(list.dataSource.size() > 0){
+			var entity : Entity = list.getItem(list.selectedIndex).data.userData;
+			onEntitySelected(entity);
+		}
 	}
 	
 	function onEntitySelected(entity : Entity) {
@@ -259,7 +256,18 @@ class Editor extends XMLController
 			case 'saveScene' :
 				mCommander.exec("save", []);
 			case 'newScene' :
-				mCommander.exec("createScene", ["test"]);
+				commandWithParam("createScene", [ { name:"name", fieldClass:TextInput } ]);
+			case 'loadScene' : 
+				commandWithParam("load", [ { name:"name", fieldClass:TextInput } ]);
+		}
+	}
+	
+	function onEntitySelect(e:MenuEvent):Void 
+	{
+		switch(e.menuItem.id) {
+			case 'createEntity' :
+				commandWithParam("create", [ { name:"name", fieldClass:TextInput } ]);
+
 		}
 	}
 	
@@ -268,6 +276,33 @@ class Editor extends XMLController
 		for (ent in mEngine.entities) {
 			list.dataSource.add( { text: ent.name, userData: ent } );
 		}
+	}
+	
+	function commandWithParam(command : String, params : Array<{name:String, fieldClass : Class<Component>}>) {
+		var vbox = new VBox();
+		vbox.percentWidth = 100;
+		var fields = new Array<Component>();
+		
+		for (param in params) {
+			var name : Text = new Text();
+			name.text = param.name;
+			
+			var input : Component = Type.createInstance(param.fieldClass, []);
+			input.percentWidth = 100;
+			vbox.addChild(name);
+			vbox.addChild(input);
+			fields.push(input);
+		}
+		
+		PopupManager.instance.showCustom(vbox, command, PopupButton.CONFIRM | PopupButton.CANCEL, function (button) {
+			if (button == PopupButton.CONFIRM) {
+				var paramArray = new Array<Dynamic>();
+				for (field in fields) {
+					paramArray.push(field.value);
+				}
+				mCommander.exec(command, paramArray);
+			}
+		});
 	}
 	
 	function clearEntityList() {

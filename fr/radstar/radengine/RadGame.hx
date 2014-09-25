@@ -33,7 +33,7 @@ class RadGame extends Sprite
 	
 	public static var instance : RadGame;
 
-	public function new(firstScene : String) 
+	public function new(firstScene : String = null) 
 	{
 		super();
 		
@@ -43,7 +43,8 @@ class RadGame extends Sprite
 		
 		mEngine = new Engine();
 		
-		loadScene(firstScene);
+		if(firstScene != null)
+			loadScene(firstScene);
 		
 		#if debug
 		initDebugTools();

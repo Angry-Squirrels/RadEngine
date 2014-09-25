@@ -90,7 +90,6 @@ class Scene
 		
 		var scene = { systems : sysTab, entitys : entityTab };
 		var result = Json.stringify(scene, replace, '\t');
-		
 		var file = File.write(mPath.toString());
 		file.writeString(result);
 		file.close();
