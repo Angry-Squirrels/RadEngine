@@ -151,11 +151,32 @@ class Editor extends XMLController
 							vbox.addChild(inputInt);
 							
 						default :
-							/*input = new TextInput();
-							input.value = Reflect.getProperty(comp, field);*/
+							var text : Text = new Text();
+							text.text = field;
+							vbox.addChild(text);
+							
+							var input = new TextInput();
+							input.text = Reflect.getProperty(comp, field);
+							input.userData = { component: comp, field:fieldName };
+							input.addEventListener(UIEvent.CHANGE, onChangeDefault);
+							input.percentWidth = 100;
+							vbox.addChild(input);
 					}
 				}
 			}
+		}
+	}
+	
+	function onChangeDefault(e:UIEvent):Void 
+	{
+		var input : TextInput = cast e.displayObject;
+		
+		try {
+			var comp = input.userData.component;
+			var field = input.userData.field;
+			Reflect.setProperty(comp, field, input.text);
+		}catch (e : Dynamic) {
+			trace(e);
 		}
 	}
 	
