@@ -57,16 +57,12 @@ class RadGame extends Sprite
 	}
 	#if debug
 	
-	var mConsole : Console;
 	var mEditor : Editor;
 	var mCommander : Commander;
 	
 	function initDebugTools() 
 	{
 		mCommander = Commander.getInstance();
-		
-		mConsole = new Console(this, mEngine);
-		mConsole.setCommander(mCommander);
 		
 		mCommander.add(this, loadScene, 'load');
 		mCommander.add(this, editMode, 'edit');
@@ -90,15 +86,8 @@ class RadGame extends Sprite
 	private function onKeyDebugDown(e:KeyboardEvent):Void 
 	{
 		if (e.keyCode == Keyboard.D && e.ctrlKey == true && e.altKey == true) {
-			e.stopImmediatePropagation();
-			var v = mConsole.toggleVisibility();
-			editMode(v);
-			if (v){
-				Lib.current.stage.focus = mConsole.getInput();
-				mEditor.show();
-			}else {
-				mEditor.hide();
-			}
+			editMode(true);
+			mEditor.show();
 		}
 	}
 	
