@@ -60,12 +60,14 @@ class Editor extends XMLController
 		comp.clipContent = true;
 		comp.sprite.addChild(RadGame.instance);
 		initEntityList();
+		initSystemList();
 	}
 	
 	public function hide() {
 		mRoot.removeChild(this.view, false);
 		Lib.current.stage.addChild(RadGame.instance);
 		clearEntityList();
+		clearSystemList();
 	}
 	
 	function initToolkit(root : Root) {				
@@ -101,67 +103,69 @@ class Editor extends XMLController
 		var compList : Accordion = cast getComponent("components");
 		compList.removeAllChildren();
 		
-		for (comp in ent.components) {
-			
-			var scrollView = new ScrollView();
-			scrollView.percentWidth = 100;
-			scrollView.percentHeight = 100;
-			
-			var grid = new Grid();
-			grid.columns = 2;
-			grid.percentWidth = 100;
-			scrollView.addChild(grid);
-			
-			var name = Type.getClassName(Type.getClass(comp));
-			var nameSplit = name.split('.');
-			name = nameSplit[nameSplit.length - 1];
-			
-			scrollView.text = name;
-			
-			compList.addChild(scrollView);
-			
-			for (field in Reflect.fields(comp)) {
-				var fieldName : String = cast field;
-				if (fieldName.indexOf("m") != 0)
-				{
-					var inputType : ValueType = Type.typeof(Reflect.field(comp, field));
+		for (comp in ent.components)
+			addComponentToList(compList, comp);
+	}
+	
+	function addComponentToList(accordion : Accordion, elem : Dynamic) {
+		var scrollView = new ScrollView();
+		scrollView.percentWidth = 100;
+		scrollView.percentHeight = 100;
+		
+		var grid = new Grid();
+		grid.columns = 2;
+		grid.percentWidth = 100;
+		scrollView.addChild(grid);
+		
+		var name = Type.getClassName(Type.getClass(elem));
+		var nameSplit = name.split('.');
+		name = nameSplit[nameSplit.length - 1];
+		
+		scrollView.text = name;
+		
+		accordion.addChild(scrollView);
+		
+		for (field in Reflect.fields(elem)) {
+			var fieldName : String = cast field;
+			if (fieldName.indexOf("m") != 0)
+			{
+				var inputType : ValueType = Type.typeof(Reflect.field(elem, field));
+				
+				var fieldTxt : Text = new Text();
+				fieldTxt.text = field;
+				grid.addChild(fieldTxt);
+				
+				var input : Component;
+				
+				switch (inputType) {
+					case ValueType.TBool :
+						var check : CheckBox = new CheckBox();
+						var value : Bool = Reflect.getProperty(elem, field);
+						check.selected = value;
+						check.addEventListener(UIEvent.CHANGE, onChangeCheckBox);
+						input = check;
 					
-					var fieldTxt : Text = new Text();
-					fieldTxt.text = field;
-					grid.addChild(fieldTxt);
+					case ValueType.TFloat :
+						var inputFloat = new TextInput();
+						inputFloat.text = Reflect.getProperty(elem, field);
+						inputFloat.addEventListener(UIEvent.CHANGE, onChangeFloat);
+						input = inputFloat;
 					
-					var input : Component;
-					
-					switch (inputType) {
-						case ValueType.TBool :
-							var check : CheckBox = new CheckBox();
-							var value : Bool = Reflect.getProperty(comp, field);
-							check.selected = value;
-							check.addEventListener(UIEvent.CHANGE, onChangeCheckBox);
-							input = check;
+					case ValueType.TInt :					
+						var inputInt = new TextInput();
+						inputInt.text = Reflect.getProperty(elem, field);
+						inputInt.addEventListener(UIEvent.CHANGE, onChangeInt);
+						input = inputInt;
 						
-						case ValueType.TFloat :
-							var inputFloat = new TextInput();
-							inputFloat.text = Reflect.getProperty(comp, field);
-							inputFloat.addEventListener(UIEvent.CHANGE, onChangeFloat);
-							input = inputFloat;
-						
-						case ValueType.TInt :					
-							var inputInt = new TextInput();
-							inputInt.text = Reflect.getProperty(comp, field);
-							inputInt.addEventListener(UIEvent.CHANGE, onChangeInt);
-							input = inputInt;
-							
-						default :							
-							input = new TextInput();
-							input.text = Reflect.getProperty(comp, field);
-							input.addEventListener(UIEvent.CHANGE, onChangeDefault);
-					}
-					
-					input.userData = { component: comp, field:fieldName };
-					input.percentWidth = 100;
-					grid.addChild(input);
+					default :							
+						input = new TextInput();
+						input.text = Reflect.getProperty(elem, field);
+						input.addEventListener(UIEvent.CHANGE, onChangeDefault);
 				}
+				
+				input.userData = { component: elem, field:fieldName };
+				input.percentWidth = 100;
+				grid.addChild(input);
 			}
 		}
 	}
@@ -278,6 +282,86 @@ class Editor extends XMLController
 		for (ent in mEngine.entities) {
 			list.dataSource.add( { text: ent.name, userData: ent } );
 		}
+	}
+	
+	function initSystemList() {
+		var list : Accordion = cast getComponent("systems");
+		for (sys in mEngine.systems) 
+			addSystemToList(list, sys);
+	}
+	
+	function sysFieldToExclude(field : String) : Bool {
+		if (field.indexOf("m") == 0)
+			return true;
+			
+		var bannedFields : Array<String> = ["next", "previous", "nodeList", "nodeClass"];
+		if (bannedFields.indexOf(field) != -1) return true;
+		return false;
+	}
+	
+	function addSystemToList(list : Accordion, sys : Dynamic) {
+		var scrollView = new ScrollView();
+		scrollView.percentWidth = 100;
+		scrollView.percentHeight = 100;
+		
+		var grid = new Grid();
+		grid.columns = 2;
+		grid.percentWidth = 100;
+		scrollView.addChild(grid);
+		
+		var name = Type.getClassName(Type.getClass(sys));
+		var nameSplit = name.split('.');
+		name = nameSplit[nameSplit.length - 1];
+		
+		scrollView.text = name;
+		
+		list.addChild(scrollView);
+		
+		for (field in Reflect.fields(sys)) {
+			var fieldName : String = cast field;
+			
+			if (!sysFieldToExclude(field))
+			{
+				var inputType : ValueType = Type.typeof(Reflect.field(sys, field));
+				
+				var fieldTxt : Text = new Text();
+				fieldTxt.text = field;
+				grid.addChild(fieldTxt);
+				
+				var input : Component;
+				
+				switch (inputType) {
+					case ValueType.TBool :
+						var check : CheckBox = new CheckBox();
+						var value : Bool = Reflect.getProperty(sys, field);
+						check.selected = value;
+						input = check;
+					
+					case ValueType.TFloat :
+						var inputFloat = new TextInput();
+						inputFloat.text = Reflect.getProperty(sys, field);
+						input = inputFloat;
+					
+					case ValueType.TInt :					
+						var inputInt = new TextInput();
+						inputInt.text = Reflect.getProperty(sys, field);
+						input = inputInt;
+						
+					default :							
+						input = new TextInput();
+						input.text = Reflect.getProperty(sys, field);
+				}
+				
+				input.userData = { component: sys, field:fieldName };
+				input.percentWidth = 100;
+				grid.addChild(input);
+			}
+		}
+	}
+	
+	function clearSystemList() {
+		var list : Accordion = cast getComponent("systems");
+		list.removeAllChildren();
 	}
 	
 	function commandWithParam(command : String, params : Array<{name:String, fieldClass : Class<Component>}>) {
