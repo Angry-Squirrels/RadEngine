@@ -83,7 +83,7 @@ class Editor extends XMLController
 	function onEntityListClicked(e : UIEvent) 
 	{
 		var list : ListView = cast getComponent("entities");
-		if(list.dataSource.size() > 0){
+		if(list.selectedIndex != -1){
 			var entity : Entity = list.getItem(list.selectedIndex).data.userData;
 			onEntitySelected(entity);
 		}

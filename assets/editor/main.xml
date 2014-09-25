@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <vbox width="100%" height="100%">
     <menubar>
+        <menubutton text="File" id="menuFile">
+            <menu>
+                <menuitem text="New" id="newFile" />
+                <menuitem text="Save" id="saveFile" />
+                <menuitem text="Open" id="openFile" />
+            </menu>
+        </menubutton>
         <menubutton text="Edit" id="menuEdit">
             <menu>
-                <menuitem text="copy" id="copyEdit" />
-                <menuitem text="cut" id="cutEdit" />
-                <menuitem text="past" id="pastEdit" />
+                <menuitem text="Copy" id="copyEdit" />
+                <menuitem text="Cut" id="cutEdit" />
+                <menuitem text="Past" id="pastEdit" />
             </menu>
         </menubutton>   
         <menubutton text="Scene" id="menuScene">
@@ -21,7 +28,18 @@
                 <menuitem text="Save" id="saveEntity" />
                 <menuitem text="Load" id="loadEntity" />
             </menu>
-        </menubutton>   
+        </menubutton>
+        <menubutton text="Systems" id="menuSystems">
+            <menu>
+                <menuitem text="Add" id="addSystem" />
+            </menu>
+        </menubutton>    
+        <menubutton text="Game" id="menuGame">
+            <menu>
+                <menuitem text="Property" id="propertyGame" />
+            </menu>
+        </menubutton> 
+        <spacer width="25"/>
         <button text="play" id="play/pause" toggle="true"/>   
         <button text="stop" id="stop" /> 
     </menubar>
@@ -40,9 +58,11 @@
                 </Accordion>
             </vbox>     
         </Tabview>
-      
-        <absolute id="renderZone" width="100%" height="100%">
-        </absolute>
+        <Tabview id="editor" width="85%" height="100%">
+            <absolute text="scene" id="renderZone" width="100%" height="100%">
+            </absolute>   
+        </Tabview>
+        
         
 
     </hbox>
