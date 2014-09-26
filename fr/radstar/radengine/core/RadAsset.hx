@@ -35,4 +35,8 @@ class RadAsset
 		File.saveContent(path, content);
 	}
 	
+	public function exists() : Bool {
+		return FileSystem.exists(path);
+	}
+	
 }
