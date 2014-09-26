@@ -13,10 +13,12 @@ class RadAsset
 	public var path : String;
 	public var type : String;
 	public var content : String;
+	public var name : String;
 	
 	public function new(name : String, type : String) 
 	{
-		this.path = "assets/"+type+"/"+name+".radasset";
+		this.path = "assets/" + type+"/" + name+".radasset";
+		this.name = name;
 	}
 	
 	public function getContent() : String {

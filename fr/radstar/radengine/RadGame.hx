@@ -167,7 +167,7 @@ class RadGame extends Sprite
 	}
 	
 	function createScene(name : String) {
-		var scene = new Level(name, false);
+		var scene = new Level(name);
 		gotoScene(scene);
 	}
 	
@@ -248,6 +248,7 @@ class RadGame extends Sprite
 	
 	public function loadLevel(name : String, goto : Bool = true) : Level {
 		var level = new Level(name);
+		level.load();
 		if (goto) gotoScene(level);
 		return level;
 	}
