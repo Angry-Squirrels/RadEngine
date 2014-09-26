@@ -15,9 +15,8 @@
         <button text="stop" id="stop" /> 
     </menubar>
     <hbox width="100%" height="100%">
-
-		<vbox height="100%" width="15%" text="assets">
-		</vbox>    
+	
+		<import resource="assets/editor/AssetsBrowser.xml" />
         
         <Tabview id="editors" width="85%" height="100%">       
         </Tabview>   

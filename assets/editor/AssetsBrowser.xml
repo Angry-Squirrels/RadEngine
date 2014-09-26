@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AssetsBrowser height="100%" width="15%" text="assets"/>
+	<vbox height="100%">
+		<hbox width="100%">
+			<button text="add" id="add"/>   
+			<button text="delete" id="delete" /> 
+			<button text="refresh" id="refresh" />
+		</hbox>
+	</vbox>
+</AssetsBrowser>

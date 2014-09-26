@@ -2,6 +2,8 @@ package fr.radstar.radengine.editor;
 import ash.core.Engine;
 import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.controls.Button;
+import haxe.ui.toolkit.controls.TabBar;
+import haxe.ui.toolkit.core.ClassManager;
 import haxe.ui.toolkit.core.Component;
 import haxe.ui.toolkit.core.Root;
 import haxe.ui.toolkit.core.Toolkit;
@@ -20,8 +22,15 @@ class Editor extends XMLController
 	
 	var mGame : RadGame;
 	
+	var mActiveEditor : AssetEditor;
+	var mOpenedEditors : Array<AssetEditor>;
+	var mEditorTabBars : TabBar;
+	
 	public function new() 
 	{
+		
+		ClassManager.instance.registerComponentClass(AssetsBrowser, "AssetsBrowser");
+		
 		Toolkit.theme = new GradientTheme();
 		Toolkit.openFullscreen(initToolkit);
 		Toolkit.init();
@@ -29,6 +38,8 @@ class Editor extends XMLController
 		super("editor/main.xml");
 		
 		mGame = RadGame.instance;
+		mOpenedEditors = new Array<AssetEditor>();
+		mEditorTabBars = getComponentAs("editors", TabBar);
 		
 		mRoot.addChild(this.view);
 
