@@ -6,7 +6,7 @@ package fr.radstar.radengine.systems;
 
 interface RadSystem 
 {
-	function shouldStop() : Bool;
+	function shouldPause() : Bool;
 	
 	function pause() : Void;
 	

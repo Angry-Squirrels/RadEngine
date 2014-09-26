@@ -1,4 +1,4 @@
-package fr.radstar.radengine;
+package fr.radstar.radengine.core ;
 import haxe.Json;
 
 /**
@@ -30,7 +30,7 @@ class GameConfig
 	
 	public function save() {
 		
-		var systems = mGame.getSystems();
+		var systems = mGame.getEngine().systems;
 		var fieldToExclude = ["next", "previous", "nodeList", "nodeClass"];
 		
 		var config = { };

@@ -1,7 +1,6 @@
 package fr.radstar.radengine.editor;
 import ash.core.Engine;
 import ash.core.Entity;
-import fr.radstar.radengine.command.Commander;
 import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.Grid;
@@ -35,19 +34,17 @@ class Editor extends XMLController
 	
 	var mRoot : Root;
 	
-	var mCommander : Commander;
-	
-	public function new(engine : Engine, game : RadGame) 
+	public function new() 
 	{
 		Toolkit.theme = new GradientTheme();
 		Toolkit.openFullscreen(initToolkit);
 		Toolkit.init();
 		
-		mCommander = Commander.getInstance();
-		
 		super("editor/main.xml");
 		
-		mEngine = engine;
+		mGame = RadGame.instance;
+		
+		mEngine = mGame.getEngine();
 		mEngine.entityAdded.add(onEntityAdded);
 		mEngine.entityRemoved.add(onEntityRemoved);
 
@@ -94,7 +91,6 @@ class Editor extends XMLController
 	}
 	
 	function onEntitySelected(entity : Entity) {
-		mCommander.exec("select", [entity.name]);
 		initComponentList(entity);
 	}
 	
@@ -238,14 +234,15 @@ class Editor extends XMLController
 	
 	function onPlayPauseClicked(e : UIEvent) 
 	{
+		mGame.togglePause();
 		var playPause : Button = cast getComponent("play/pause");
-		if (playPause.selected){
+		if (mGame.isPaused()){
 			playPause.text = "play";
-			mCommander.exec("pause");
+			playPause.selected = true;
 		}
 		else{
 			playPause.text = "pause";
-			mCommander.exec("resume");
+			playPause.selected = false;
 		}
 	}
 	
@@ -253,18 +250,15 @@ class Editor extends XMLController
 		var playPause : Button = cast getComponent("play/pause");
 		playPause.text = "play";
 		playPause.selected = false;
-		mCommander.exec("stop");
+		mGame.stop();
 	}
 	
 	function onSceneSelect(e:MenuEvent):Void 
 	{
 		switch(e.menuItem.id) {
 			case 'saveScene' :
-				mCommander.exec("save", []);
 			case 'newScene' :
-				commandWithParam("createScene", [ { name:"name", fieldClass:TextInput } ]);
 			case 'loadScene' : 
-				commandWithParam("load", [ { name:"name", fieldClass:TextInput } ]);
 		}
 	}
 	
@@ -386,7 +380,7 @@ class Editor extends XMLController
 				for (field in fields) {
 					paramArray.push(field.value);
 				}
-				mCommander.exec(command, paramArray);
+				//mCommander.exec(command, paramArray);
 			}
 		});
 	}

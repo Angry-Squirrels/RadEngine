@@ -1,4 +1,4 @@
-package fr.radstar.radengine;
+package fr.radstar.radengine.core ;
 import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;

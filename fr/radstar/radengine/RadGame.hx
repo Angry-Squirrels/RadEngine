@@ -4,16 +4,16 @@ import ash.core.Engine;
 import ash.core.Entity;
 import ash.core.System;
 import ash.core.SystemList;
-import fr.radstar.radengine.command.Commander;
 import fr.radstar.radengine.editor.Editor;
 import fr.radstar.radengine.systems.RadSystem;
-import fr.radstar.radengine.tools.Console;
 import haxe.Json;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.Lib;
 import openfl.ui.Keyboard;
+import fr.radstar.radengine.core.GameConfig;
+import fr.radstar.radengine.core.Level;
 
 /**
  * ...
@@ -24,13 +24,10 @@ class RadGame extends Sprite
 	
 	var mLastTime : Int;
 	var mEngine : Engine;
-	var mEditMode : Bool;
 	
 	var mBaseLevel : String;
 	
-	var mSelectedEntity : Entity;
-	
-	var mStop : Bool;
+	var mPause : Bool;
 	
 	var mConfig : GameConfig;
 	
@@ -68,7 +65,7 @@ class RadGame extends Sprite
 			mBaseLevel = mConfig.initialLevel;
 			loadLevel(mBaseLevel);
 			
-			mStop = false;
+			mPause = false;
 			
 			#if debug
 			initDebugTools();
@@ -83,76 +80,34 @@ class RadGame extends Sprite
 	#if debug
 	
 	var mEditor : Editor;
-	var mCommander : Commander;
 	
 	function initDebugTools() 
 	{
-		mCommander = Commander.getInstance();
-		
-		mCommander.add(this, loadLevel, 'load');
-		mCommander.add(this, selectEntityByName, 'select');
-		mCommander.add(this, createEntity, 'create');
-		mCommander.add(this, addComponent, 'add');
-		mCommander.add(this, addSystem, 'addSystem');
-		mCommander.add(this, editComp, 'editComp');
-		mCommander.add(this, stop, 'stop');
-		mCommander.add(this, resume, 'resume');
-		mCommander.add(this, pause, 'pause');
-		mCommander.add(this, removeEntity, 'remove');
-		
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDebugDown);
 		
-		mEditor = new Editor(mEngine, this);
+		mEditor = new Editor();
 	}
 	
-	private function onKeyDebugDown(e:KeyboardEvent):Void 
+	function onKeyDebugDown(e:KeyboardEvent):Void 
 	{
 		if (e.keyCode == Keyboard.D && e.ctrlKey == true && e.altKey == true) 
 			mEditor.show();
 	}
 	
-	function editComp(name : String, prop : String, value : Dynamic) {
-		if (mSelectedEntity != null) {
-			var comp = mSelectedEntity.get(Type.resolveClass('fr.radstar.radengine.components.' + name));
-			Reflect.setProperty(comp, prop, value);
-		}
-	}
+	#end
 	
-	function addComponent(name : String) {
-		var comp = Type.createInstance(Type.resolveClass('fr.radstar.radengine.components.' + name), []);
-		mSelectedEntity.add(comp);
-	}
-	
-	function createEntity(name : String) : Entity {
-		var ent = new Entity(name);
-		mEngine.addEntity(ent);
-		selectEntity(ent);
-		return ent;
-	}
-	
-	function removeEntity() {
-		mEngine.removeEntity(mSelectedEntity);
-		mSelectedEntity = null;
-	}
-	
-	function addSystem(name : String) {
-		var system = Type.createInstance(Type.resolveClass('fr.radstar.radengine.systems.' + name), []);
-		mEngine.addSystem(system, 0);
-	}
-	
-	function pause() {
-		mStop = true;
-		for (system in mEngine.systems) {
+	// Play / Pause
+	public function pause() {
+		mPause = true;
+		for (system in mEngine.systems) 
 			if (Std.is(system, RadSystem)) {
 				var current : RadSystem = cast system;
-				if (current.shouldStop()) {
+				if (current.shouldPause()) 
 					current.pause();
-				}
 			}
-		}
 	}
 	
-	function stop() {
+	public function stop() {
 		var levelToReload = new Array<String>();
 		for (level in mLevels) 
 			levelToReload.push(level.name);
@@ -165,46 +120,35 @@ class RadGame extends Sprite
 		pause();
 	}
 	
-	function resume() {
-		mStop = false;
+	public function resume() {
+		mPause = false;
 		for (system in mEngine.systems)
 			if (Std.is(system, RadSystem)) {
 				var current : RadSystem = cast system;
 				current.resume();
 			}
 	}
-	#end
+	
+	public function togglePause() {
+		if (mPause)
+			resume();
+		else
+			pause();
+	}
+	
+	public function isPaused() : Bool {
+		return mPause;
+	}
 	
 	public function getBaseLevel() : String {
 		return mBaseLevel;
 	}
 	
-	public function setBaseLevel(name :  String) {
-		mBaseLevel = name;
+	public function getEngine() : Engine {
+		return mEngine;
 	}
 	
-	public function getSystems() : Iterable<System> {
-		return mEngine.systems;
-	}
-	
-	public function getSelectedEntity() : Entity {
-		return mSelectedEntity;
-	}
-	
-	public function selectEntity(entity : Entity) {
-
-		
-	
-		mSelectedEntity = entity;
-		
-	}
-	
-	public function selectEntityByName(name : String) {
-		var ent = mEngine.getEntityByName(name);
-		if(ent != null)
-			selectEntity(ent);
-		else trace("no such entity");
-	}
+	// LEVELS HANDLING
 	
 	public function loadLevel(name : String, add : Bool = true) : Level {
 		var level = new Level(name);
@@ -233,6 +177,8 @@ class RadGame extends Sprite
 		unloadAllLevels();
 		addLevel(level);
 	}
+	
+	// MAIN LOOP
 	
 	function onEnterFrame(e:Event):Void 
 	{

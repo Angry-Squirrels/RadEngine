@@ -1,4 +1,4 @@
-package fr.radstar.radengine;
+package fr.radstar.radengine.core ;
 import ash.core.Entity;
 import haxe.Json;
 
