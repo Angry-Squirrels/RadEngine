@@ -56,35 +56,37 @@ class Level
 	
 	public function load() 
 	{
-		var levelData = Json.parse(asset.getContent());
-		
-		// entity list
-		var entitys : Array<Dynamic> = levelData.entitys;
-		for (current in entitys) {
-			var prefab = new Prefab(current.prefab, current.name);
-			prefab.load();
+		if(asset.exists()){
+			var levelData = Json.parse(asset.getContent());
 			
-			var comps : Array<Dynamic> = current.params;
-			for (comp in comps) {
-				var compClass = Type.resolveClass(comp.name);
-				if (comp.remove) 
-					prefab.remove(compClass);
-				else {
-					var currentComp : Dynamic;
-					if (!prefab.has(compClass))
-					{
-						currentComp = Type.createInstance(compClass, []);
-						prefab.add(currentComp);
+			// entity list
+			var entitys : Array<Dynamic> = levelData.entitys;
+			for (current in entitys) {
+				var prefab = new Prefab(current.prefab, current.name);
+				prefab.load();
+				
+				var comps : Array<Dynamic> = current.params;
+				for (comp in comps) {
+					var compClass = Type.resolveClass(comp.name);
+					if (comp.remove) 
+						prefab.remove(compClass);
+					else {
+						var currentComp : Dynamic;
+						if (!prefab.has(compClass))
+						{
+							currentComp = Type.createInstance(compClass, []);
+							prefab.add(currentComp);
+						}
+						else
+							currentComp = prefab.get(compClass);
+							
+						for (field in Reflect.fields(comp.params)) 
+							Reflect.setField(currentComp, field, Reflect.field(comp.params, field));
 					}
-					else
-						currentComp = prefab.get(compClass);
-						
-					for (field in Reflect.fields(comp.params)) 
-						Reflect.setField(currentComp, field, Reflect.field(comp.params, field));
 				}
+				
+				mEntitys.push(prefab);
 			}
-			
-			mEntitys.push(prefab);
 		}
 	}
 }

@@ -23,9 +23,11 @@ class GameConfig
 	}
 	
 	public function load() {
-		var loaded = Json.parse(asset.getContent());
-		initialLevel = loaded.baseLevel;
-		systemList = loaded.systems;
+		if(asset.exists()){
+			var loaded = Json.parse(asset.getContent());
+			initialLevel = loaded.baseLevel;
+			systemList = loaded.systems;
+		}
 	}
 	
 	public function save() {

@@ -49,13 +49,15 @@ class Editor extends XMLController
 		mEngine.entityRemoved.add(onEntityRemoved);
 
 		bindEvents();
+		
+		show();
 	}
 	
 	public function show() {
 		mRoot.addChild(this.view);
 		var comp : Component = getComponent("renderZone");
 		comp.clipContent = true;
-		comp.sprite.addChild(RadGame.instance);
+		comp.sprite.addChild(RadGame.instance.getRenderArea());
 		initEntityList();
 		initSystemList();
 	}
@@ -69,7 +71,6 @@ class Editor extends XMLController
 	
 	function initToolkit(root : Root) {				
 		mRoot = root;
-		mRoot.addChild(this.view);
 	}
 	
 	function bindEvents() 

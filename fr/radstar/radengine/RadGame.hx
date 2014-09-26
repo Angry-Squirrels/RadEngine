@@ -1,19 +1,13 @@
 package fr.radstar.radengine;
 
 import ash.core.Engine;
-import ash.core.Entity;
-import ash.core.System;
-import ash.core.SystemList;
-import fr.radstar.radengine.editor.Editor;
-import fr.radstar.radengine.systems.RadSystem;
-import haxe.Json;
-import openfl.display.Sprite;
-import openfl.events.Event;
-import openfl.events.KeyboardEvent;
-import openfl.Lib;
-import openfl.ui.Keyboard;
 import fr.radstar.radengine.core.GameConfig;
 import fr.radstar.radengine.core.Level;
+import fr.radstar.radengine.editor.Editor;
+import fr.radstar.radengine.systems.RadSystem;
+import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.Lib;
 
 /**
  * ...
@@ -31,6 +25,8 @@ class RadGame extends Sprite
 	
 	var mConfig : GameConfig;
 	
+	var mRenderArea : Sprite;
+	
 	// loaded levels;
 	var mLevels : Array<Level>;
 	
@@ -43,6 +39,7 @@ class RadGame extends Sprite
 			instance = this;
 			
 			mEngine = new Engine();
+			mRenderArea = new Sprite();
 			
 			// loaded levels;
 			mLevels = new Array<Level>();
@@ -53,13 +50,14 @@ class RadGame extends Sprite
 			
 			// get systemList
 			var systems = mConfig.systemList;
-			for (system in systems) {
-				var sysClass = Type.resolveClass(system.name);
-				var sys = Type.createInstance(sysClass, []);
-				for (field in Reflect.fields(system.params))
-					Reflect.setField(sys, field, Reflect.field(system.params, field));
-				mEngine.addSystem(sys, sys.priority);
-			}
+			if(systems != null)
+				for (system in systems) {
+					var sysClass = Type.resolveClass(system.name);
+					var sys = Type.createInstance(sysClass, []);
+					for (field in Reflect.fields(system.params))
+						Reflect.setField(sys, field, Reflect.field(system.params, field));
+					mEngine.addSystem(sys, sys.priority);
+				}
 			
 			// get first level
 			mBaseLevel = mConfig.initialLevel;
@@ -67,33 +65,22 @@ class RadGame extends Sprite
 			
 			mPause = false;
 			
-			#if debug
-			initDebugTools();
-			#end
-			
 			Lib.current.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
-			
 			mLastTime = Lib.getTimer();
+			
+			#if !noEditor
+			addEventListener(Event.ADDED_TO_STAGE, initEditor);
+			#else
+			addChild(mRenderArea);
+			#end
 		}
-		
-	}
-	#if debug
-	
-	var mEditor : Editor;
-	
-	function initDebugTools() 
-	{
-		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDebugDown);
-		
-		mEditor = new Editor();
 	}
 	
-	function onKeyDebugDown(e:KeyboardEvent):Void 
-	{
-		if (e.keyCode == Keyboard.D && e.ctrlKey == true && e.altKey == true) 
-			mEditor.show();
+	#if !noEditor
+	function initEditor(e : Event) {
+		removeEventListener(Event.ADDED_TO_STAGE, initEditor);
+		new Editor();
 	}
-	
 	#end
 	
 	// Play / Pause
@@ -146,6 +133,10 @@ class RadGame extends Sprite
 	
 	public function getEngine() : Engine {
 		return mEngine;
+	}
+	
+	public function getRenderArea() : Sprite {
+		return mRenderArea;
 	}
 	
 	// LEVELS HANDLING
