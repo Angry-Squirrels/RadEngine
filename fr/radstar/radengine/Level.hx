@@ -1,12 +1,8 @@
 package fr.radstar.radengine;
 import ash.core.Engine;
 import ash.core.Entity;
-import ash.core.System;
-import haxe.io.Path;
 import haxe.Json;
-import openfl.Assets;
 
-import sys.io.File;
 
 /**
  * ...
@@ -36,11 +32,6 @@ class Level
 	}
 	
 	public function end() 
-	{
-		
-	}
-	
-	public function pause()
 	{
 		
 	}
