@@ -5,7 +5,6 @@ import ash.core.Entity;
 import ash.core.System;
 import ash.core.SystemList;
 import fr.radstar.radengine.command.Commander;
-import fr.radstar.radengine.components.RadComp;
 import fr.radstar.radengine.editor.Editor;
 import fr.radstar.radengine.systems.RadSystem;
 import fr.radstar.radengine.tools.Console;
@@ -210,22 +209,10 @@ class RadGame extends Sprite
 	
 	public function selectEntity(entity : Entity) {
 
-		if (mSelectedEntity != null) {
-			for (comp in mSelectedEntity.components) 
-				if (Std.is(comp, RadComp)) {
-					var curentComp : RadComp = cast comp;
-					curentComp.unEdit();
-				}
-		}
+		
 	
 		mSelectedEntity = entity;
-		if(entity != null)
-			for (comp in mSelectedEntity.components) {
-				if (Std.is(comp, RadComp)) {
-					var curentComp : RadComp = cast comp;
-					curentComp.edit();
-				}
-			}
+		
 	}
 	
 	public function selectEntityByName(name : String) {
