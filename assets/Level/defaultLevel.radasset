@@ -1,0 +1,27 @@
+{
+	"systems" : [
+		"Render", "PhysicSys"
+	],
+	
+	"entitys" : [
+		{
+			"name" : "MyEntity",
+			"components" : [
+				{
+					"name" : "Transform",
+					"params" : {
+						"x" : 200,
+						"y" : 50,
+						"rotation" : 0,
+						"scaleX" : 1,
+						"scaleY" : 1
+					}
+				},
+				{
+					"name" : "View",
+					"params" : {}
+				}
+			]
+		}
+	]
+}

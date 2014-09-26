@@ -3,6 +3,7 @@ package fr.radstar.radengine;
 import ash.core.Engine;
 import ash.core.Entity;
 import ash.core.System;
+import ash.core.SystemList;
 import fr.radstar.radengine.command.Commander;
 import fr.radstar.radengine.components.RadComp;
 import fr.radstar.radengine.editor.Editor;
@@ -22,37 +23,57 @@ import openfl.ui.Keyboard;
 class RadGame extends Sprite
 {
 	
-	var mCurrentScene : Scene;
+	var mCurrentScene : Level;
 	var mLastTime : Int;
 	var mEngine : Engine;
 	var mEditMode : Bool;
+	
+	var mBaseLevel : String;
 	
 	var mSelectedEntity : Entity;
 	
 	var mStop : Bool;
 	
+	var mConfig : GameConfig;
+	
 	public static var instance : RadGame;
 
-	public function new(firstScene : String = null) 
+	public function new() 
 	{
-		super();
-		
-		instance = this;
-		
-		mStop = false;
-		
-		mEngine = new Engine();
-		
-		if(firstScene != null)
-			loadScene(firstScene);
-		
-		#if debug
-		initDebugTools();
-		#end
-		
-		Lib.current.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
-		
-		mLastTime = Lib.getTimer();
+		if(instance == null){
+			super();
+			instance = this;
+			
+			mEngine = new Engine();
+			
+			// loadConfig 
+			mConfig = new GameConfig();
+			mConfig.load();
+			
+			// get systemList
+			var systems = mConfig.systemList;
+			for (system in systems) {
+				var sysClass = Type.resolveClass(system.name);
+				var sys = Type.createInstance(sysClass, []);
+				for (field in Reflect.fields(system.params))
+					Reflect.setField(sys, field, Reflect.field(system.params, field));
+				mEngine.addSystem(sys, sys.priority);
+			}
+			
+			// get first level
+			mBaseLevel = mConfig.initialLevel;
+			loadLevel(mBaseLevel);
+			
+			mStop = false;
+			
+			#if debug
+			initDebugTools();
+			#end
+			
+			Lib.current.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			
+			mLastTime = Lib.getTimer();
+		}
 		
 	}
 	#if debug
@@ -64,7 +85,7 @@ class RadGame extends Sprite
 	{
 		mCommander = Commander.getInstance();
 		
-		mCommander.add(this, loadScene, 'load');
+		mCommander.add(this, loadLevel, 'load');
 		mCommander.add(this, editMode, 'edit');
 		mCommander.add(this, selectEntityByName, 'select');
 		mCommander.add(this, saveScene, 'save');
@@ -146,7 +167,7 @@ class RadGame extends Sprite
 	}
 	
 	function createScene(name : String) {
-		var scene = new Scene(name, false);
+		var scene = new Level(name, false);
 		gotoScene(scene);
 	}
 	
@@ -168,7 +189,7 @@ class RadGame extends Sprite
 	}
 	
 	function stop() {
-		loadScene(mCurrentScene.name, true);
+		loadLevel(mCurrentScene.name, true);
 		pause();
 	}
 	
@@ -181,6 +202,18 @@ class RadGame extends Sprite
 			}
 	}
 	#end
+	
+	public function getBaseLevel() : String {
+		return mBaseLevel;
+	}
+	
+	public function setBaseLevel(name :  String) {
+		mBaseLevel = name;
+	}
+	
+	public function getSystems() : Iterable<System> {
+		return mEngine.systems;
+	}
 	
 	public function getSelectedEntity() : Entity {
 		return mSelectedEntity;
@@ -213,23 +246,22 @@ class RadGame extends Sprite
 		else trace("no such entity");
 	}
 	
-	public function loadScene(name : String, goto : Bool = true) : Scene {
-		var scene = new Scene(name);
-		if (goto) gotoScene(scene);
-		return return scene;
+	public function loadLevel(name : String, goto : Bool = true) : Level {
+		var level = new Level(name);
+		if (goto) gotoScene(level);
+		return level;
 	}
 	
-	public function gotoScene(scene : Scene) {
+	public function gotoScene(scene : Level) {
 		// clear all systems and entity
 		mEngine.removeAllEntities();
-		mEngine.removeAllSystems();
 		if (mCurrentScene != null)
 			mCurrentScene.end();
 		mCurrentScene = scene;
 		mCurrentScene.start(mEngine);
 	}
 	
-	public function addScene(scene : Scene) {
+	public function addScene(scene : Level) {
 		
 	}
 	
@@ -239,10 +271,7 @@ class RadGame extends Sprite
 		var delta : Float = (time - mLastTime) * 0.001;
 		mLastTime = time;
 		
-		if (mCurrentScene != null){
-			mCurrentScene.update(delta);
-			mEngine.update(delta);
-		}
+		mEngine.update(delta);
 	}
 	
 }

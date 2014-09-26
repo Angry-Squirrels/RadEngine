@@ -76,7 +76,6 @@ class Prefab extends Entity
 			}
 		}
 		
-		trace(Json.stringify(diffs, null, '\t'));
 		return diffs;
 	}
 	

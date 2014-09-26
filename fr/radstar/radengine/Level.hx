@@ -12,37 +12,31 @@ import sys.io.File;
  * ...
  * @author TBaudon
  */
-class Scene
+class Level
 {
 	
-	var mPath : Path;
+	public var asset : RadAsset;
 	
 	var mSystems : Array<System>;
 	var mEntitys : Array<Entity>;
 	
 	public var name : String;
 	
-	public function new(sceneName : String, autoLoad : Bool = true) 
+	public function new(n : String, autoLoad : Bool = true) 
 	{
-		mPath = new Path("scenes/" + sceneName + ".json");
+		name = n;
+		asset = new RadAsset(name, "Level");
 		
 		mSystems = new Array<System>();
 		mEntitys = new Array<Entity>();
-		
-		name = sceneName;
 		
 		if(autoLoad)
 			load();
 	}
 	
-	public function update(deltaTime : Float) {
-		
-	}
-	
 	// set the engine systems and entity
 	public function start(engine : Engine) 
 	{
-		for (system in mSystems) engine.addSystem(system,0);
 		for (entity in mEntitys) engine.addEntity(entity);
 	}
 	
@@ -88,11 +82,10 @@ class Scene
 			entityTab.push(ent);
 		}
 		
-		var scene = { systems : sysTab, entitys : entityTab };
-		var result = Json.stringify(scene, replace, '\t');
-		var file = File.write(mPath.toString());
-		file.writeString(result);
-		file.close();
+		var level = { systems : sysTab, entitys : entityTab };
+		var result = Json.stringify(level, replace, '\t');
+		asset.content = result;
+		asset.save();
 	}
 	
 	function replace(key : Dynamic, value : Dynamic) : Dynamic {
@@ -107,15 +100,14 @@ class Scene
 	 */
 	function load() 
 	{
-		var json = File.getContent(mPath.toString());
-		var sceneData = Json.parse(json);
+		var levelData = Json.parse(asset.getContent());
 		
 		// systems list
-		var systems : Array<Dynamic> = sceneData.systems;
+		var systems : Array<Dynamic> = levelData.systems;
 		for (current in systems) loadSystem(current);
 		
 		// entity list
-		var entitys : Array<Dynamic> = sceneData.entitys;
+		var entitys : Array<Dynamic> = levelData.entitys;
 		for (current in entitys) loadEntity(current);
 	}
 	

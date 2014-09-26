@@ -16,7 +16,7 @@ class RadAsset
 	
 	public function new(name : String, type : String) 
 	{
-		this.path = type+"/"+name+".radAsset";
+		this.path = "assets/"+type+"/"+name+".radasset";
 	}
 	
 	public function getContent() : String {
