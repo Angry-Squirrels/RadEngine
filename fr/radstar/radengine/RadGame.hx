@@ -170,6 +170,10 @@ class RadGame extends Sprite
 		addLevel(level);
 	}
 	
+	public function getLoadedLevels() : Array<Level> {
+		return mLevels;
+	}
+	
 	// MAIN LOOP
 	
 	function onEnterFrame(e:Event):Void 

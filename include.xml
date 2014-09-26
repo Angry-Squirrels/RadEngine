@@ -7,6 +7,7 @@
 	
 	<haxeflag name="--macro include('fr.radstar.radengine.components', true)" />
 	<haxeflag name="--macro include('fr.radstar.radengine.systems', true)" />
+	<haxeflag name="--macro include('fr.radstar.radengine.editor', true)" />
 	
 	<assets path="assets/editor" rename="editor" />
 </project>

@@ -19,6 +19,7 @@ class RadAsset
 	{
 		this.path = "assets/" + type+"/" + name+".radasset";
 		this.name = name;
+		this.type = type;
 	}
 	
 	public function getContent() : String {
