@@ -70,6 +70,7 @@ class RadGame extends Sprite
 			
 			#if !noEditor
 			addEventListener(Event.ADDED_TO_STAGE, initEditor);
+			pause();
 			#else
 			addChild(mRenderArea);
 			#end

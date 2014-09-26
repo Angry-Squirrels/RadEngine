@@ -6,68 +6,21 @@
                 <menuitem text="New" id="newFile" />
                 <menuitem text="Save" id="saveFile" />
                 <menuitem text="Open" id="openFile" />
+                <menuitem text="Close" id="closeFile" />
             </menu>
         </menubutton>
-        <menubutton text="Edit" id="menuEdit">
-            <menu>
-                <menuitem text="Copy" id="copyEdit" />
-                <menuitem text="Cut" id="cutEdit" />
-                <menuitem text="Past" id="pastEdit" />
-            </menu>
-        </menubutton>   
-        <menubutton text="Scene" id="menuScene">
-            <menu>
-                <menuitem text="New" id="newScene" />
-                <menuitem text="Save" id="saveScene" />
-                <menuitem text="Load" id="loadScene" />
-            </menu>
-        </menubutton>
-        <menubutton text="Entity" id="menuEntity">
-            <menu>
-                <menuitem text="New" id="createEntity" />
-                <menuitem text="Save" id="saveEntity" />
-                <menuitem text="Load" id="loadEntity" />
-            </menu>
-        </menubutton>
-        <menubutton text="Systems" id="menuSystems">
-            <menu>
-                <menuitem text="Add" id="addSystem" />
-            </menu>
-        </menubutton>    
-        <menubutton text="Game" id="menuGame">
-            <menu>
-                <menuitem text="Property" id="propertyGame" />
-            </menu>
-        </menubutton> 
-		<menubutton text="Help" id="menuHelp">
-            <menu>
-                <menuitem text="about" id="aboutHelp" />
-            </menu>
-        </menubutton> 
+       
         <spacer width="25"/>
         <button text="play" id="play/pause" toggle="true"/>   
         <button text="stop" id="stop" /> 
     </menubar>
     <hbox width="100%" height="100%">
 
-        <Tabview id="inspector" width="15%" height="100%">
-            <vbox height="100%" width="100%" text="entities">
-                <listview id="entities" width="100%" height="25%">    
-                </listview>
-                <text text="Components" />
-				<Accordion id="components" width="100%" height="100%">    
-				</Accordion>
-            </vbox>
-            <vbox height="100%" width="100%" text="systems">
-                <Accordion id="systems" width="100%" height="100%">    
-                </Accordion>
-            </vbox>     
-        </Tabview>
-        <Tabview id="editor" width="85%" height="100%">
-            <absolute text="scene" id="renderZone" width="100%" height="100%">
-            </absolute>   
-        </Tabview>
+		<vbox height="100%" width="15%" text="assets">
+		</vbox>    
         
+        <Tabview id="editors" width="85%" height="100%">       
+        </Tabview>   
         
 
     </hbox>
