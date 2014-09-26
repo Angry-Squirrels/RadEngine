@@ -65,8 +65,27 @@ class Prefab extends Entity
 			}
 		}
 		
+		// removed components
+		for (comp in baseComps) {
+			if (getCompByClass(comp.name) == null)
+			{
+				var obj = { };
+				Reflect.setField(obj, "name", comp.name);
+				Reflect.setField(obj, "remove", true);
+				diffs.push(obj);
+			}
+		}
+		
 		trace(Json.stringify(diffs, null, '\t'));
 		return diffs;
+	}
+	
+	function getCompByClass(className : String) : Dynamic {
+		for (comp in components) {
+			if (Type.getClassName(Type.getClass(comp)) == className)
+				return comp;
+		}
+		return null;
 	}
 	
 	function getCompByName(name : String, comps : Array<Dynamic>) : Dynamic {
