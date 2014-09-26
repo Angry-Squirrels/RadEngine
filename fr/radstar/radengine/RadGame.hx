@@ -117,17 +117,6 @@ class RadGame extends Sprite
 		
 		var systems = mEngine.systems;
 		
-		for (current in systems) {
-			if (Std.is(current, RadSystem)) {
-				var system : RadSystem = cast current;
-				if (mEditMode) 
-					system.enterEditMode();
-				else{
-					system.leaveEditMode();
-				}
-			}
-		}
-		
 		if (!mEditMode) {
 			selectEntity(null);
 			resume();

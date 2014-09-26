@@ -6,15 +6,9 @@ package fr.radstar.radengine.systems;
 
 interface RadSystem 
 {
-  
-	function enterEditMode() : Void;
-	
-	function leaveEditMode() : Void;
-	
 	function shouldStop() : Bool;
 	
 	function pause() : Void;
 	
-	function resume() : Void;
-	
+	function resume() : Void;	
 }
