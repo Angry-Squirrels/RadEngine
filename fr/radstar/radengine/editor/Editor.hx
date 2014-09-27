@@ -27,6 +27,7 @@ class Editor extends XMLController
 	var mActiveEditor : AssetEditor;
 	var mOpenedEditors : Array<AssetEditor>;
 	var mEditorTabBars : TabView;
+	var mAssetsBrowser : AssetsBrowser;
 	
 	public static var instance : Editor;
 	
@@ -44,6 +45,8 @@ class Editor extends XMLController
 		mGame = RadGame.instance;
 		mOpenedEditors = new Array<AssetEditor>();
 		mEditorTabBars = getComponentAs("editors", TabView);
+		
+		mAssetsBrowser = getComponentAs("assetsBrowser", AssetsBrowser);
 		
 		mRoot.addChild(this.view);
 
@@ -70,6 +73,10 @@ class Editor extends XMLController
 		
 		mActiveEditor = editor;
 		mEditorTabBars.selectedIndex = mEditorTabBars.pageCount - 1;
+	}
+	
+	public function getAssetsBrowser() : AssetsBrowser {
+		return mAssetsBrowser;
 	}
 	
 	function initToolkit(root : Root) {				

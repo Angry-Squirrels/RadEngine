@@ -15,12 +15,13 @@ import sys.FileSystem;
  */
 class AssetsBrowser extends Component
 {
+	
+	var mActivePanel : Int;
+	var mActiveItem : Int;
 
 	public function new() 
 	{
 		super();
-		
-		
 	}
 	
 	override function postInitialize() : Void {
@@ -29,31 +30,62 @@ class AssetsBrowser extends Component
 		var refreshbtn = findChild("refresh", Button, true);
 		refreshbtn.onClick = refresh;
 		
+		mActiveItem = -1;
+		mActivePanel = -1;
+		
 		refresh(null);
 	}
 	
 	function refresh(e : UIEvent) : Void{
 		var folderList = FileSystem.readDirectory("assets");
 		var accordion : Accordion = findChild("folders", Accordion, true);
+		accordion.addEventListener(UIEvent.CLICK, onAccordionClick);
+		
 		accordion.removeAllChildren();
+		var i = 0;
 		for (folder in folderList) {
 			var files = FileSystem.readDirectory('assets/$folder');
-			var vbox = new VBox();
-			vbox.percentHeight = 100;
-			vbox.percentWidth = 100;
-			vbox.text = folder;
 			var list = new ListView();
+			list.text = folder;
 			list.percentWidth = 100;
 			list.percentHeight = 100;
+			list.userData = i;
+			i++;
 			list.addEventListener(UIEvent.DOUBLE_CLICK, onListDoubleClick);
+			list.addEventListener(UIEvent.CLICK, onListClicked);
 			for (file in files)
 				list.dataSource.add( { text : file.split('.')[0], type : folder } );
-			vbox.addChild(list);
-			accordion.addChild(vbox);
+			accordion.addChild(list);
+		}
+		
+		if (mActivePanel != -1){
+			accordion.showPage(mActivePanel);
+			
+			if (mActiveItem != -1) 
+				for (child in accordion.children) 
+					if (Std.is(child, ListView)) 
+						if (cast(child, ListView).userData == mActiveItem) 
+							cast(child, ListView).selectedIndex = mActiveItem;
 		}
 	}
 	
-	private function onListDoubleClick(e:UIEvent):Void 
+	function onAccordionClick(e:UIEvent):Void 
+	{
+		var accordion : Accordion = cast e.displayObject;
+		mActivePanel = accordion.selectedIndex;
+		for (a in accordion.children) {
+			trace(cast(a, Component).text);
+		}
+	}
+	
+	function onListClicked(e:UIEvent):Void 
+	{
+		var list : ListView = cast e.displayObject;
+		if (list.selectedIndex != -1) 
+			mActiveItem = list.selectedIndex;
+	}
+	
+	function onListDoubleClick(e:UIEvent):Void 
 	{
 		var list : ListView = cast e.displayObject;
 		if (list.selectedIndex != -1) {
