@@ -109,6 +109,7 @@ class Editor extends XMLController
 		
 		mActiveEditor = editor;
 		mEditorTabBars.selectedIndex = mEditorTabBars.pageCount - 1;
+		mOpenedEditors.push(editor);
 	}
 	
 	public function getAssetsBrowser() : AssetsBrowser {
@@ -133,7 +134,15 @@ class Editor extends XMLController
 		attachEvent("menuEdit", MenuEvent.SELECT, onEditSelect);
 		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
 		attachEvent("stop", UIEvent.CLICK, onStop);
+		attachEvent("editors", UIEvent.CHANGE, onTabChanged);
 		
+	}
+	
+	function onTabChanged(e : UIEvent) 
+	{
+		var tabview : TabView = cast e.component;
+		if (tabview.selectedIndex != -1) 
+			mActiveEditor = mOpenedEditors[tabview.selectedIndex];
 	}
 	
 	function onEditOpen(e : MenuEvent) 
