@@ -88,8 +88,6 @@ class Editor extends XMLController
 			if (button == PopupButton.OK) {
 				var asset = new RadAsset(nameInput.text, typeInput.text);
 				open(asset);
-				asset.save();
-				mAssetsBrowser.refresh(null);
 			}
 		});
 	}

@@ -25,14 +25,12 @@ class RadAsset
 	public function getContent() : String {
 		if (FileSystem.exists(path))
 			content = File.getContent(path);
-		else 
-			content = "{}";
 		return content;
 	}
 	
 	public function save() {
 		if (content == null)
-			content = "{}";
+			content = "";
 		var p : Path = new Path(path);
 		FileSystem.createDirectory(p.dir);
 		File.saveContent(path, content);
