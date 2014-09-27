@@ -7,8 +7,16 @@
                 <menuitem text="Save" id="saveFile" />
                 <menuitem text="Close" id="closeFile" />
             </menu>
+			
         </menubutton>
-       
+		
+		<menubutton text="Edit" id="menuEdit">
+			<menu>
+				<menuitem text="Undo" id="UndoEdit" />
+                <menuitem text="Redo" id="RedoEdit" />
+            </menu>
+		</menubutton>
+		
         <spacer width="25"/>
         <button text="play" id="play/pause" toggle="true"/>   
         <button text="stop" id="stop" /> 
