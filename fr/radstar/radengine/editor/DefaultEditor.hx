@@ -26,8 +26,14 @@ class DefaultEditor extends AssetEditor
 	{
 		super.load(asset);
 			
-		mTextEditor.text = mAsset.getContent();
-		trace(mTextEditor.text);
+		var text = mAsset.getContent();
+		text = StringTools.replace(text, '\t', '    ');
+		mTextEditor.text = text;
+	}
+	
+	override public function save() {
+		mAsset.content = mTextEditor.text;
+		mAsset.save();
 	}
 	
 }

@@ -9,6 +9,7 @@ import haxe.ui.toolkit.core.Component;
 import haxe.ui.toolkit.core.Root;
 import haxe.ui.toolkit.core.Toolkit;
 import haxe.ui.toolkit.core.XMLController;
+import haxe.ui.toolkit.events.MenuEvent;
 import haxe.ui.toolkit.events.UIEvent;
 import haxe.ui.toolkit.themes.GradientTheme;
 
@@ -66,6 +67,9 @@ class Editor extends XMLController
 		editor.text = asset.name;
 		mEditorTabBars.addChild(editor);
 		editor.load(asset);
+		
+		mActiveEditor = editor;
+		mEditorTabBars.selectedIndex = mEditorTabBars.pageCount - 1;
 	}
 	
 	function initToolkit(root : Root) {				
@@ -74,8 +78,26 @@ class Editor extends XMLController
 	
 	function bindEvents() 
 	{
+		attachEvent("menuFile", MenuEvent.SELECT, onFileSelect);
 		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
 		attachEvent("stop", UIEvent.CLICK, onStop);
+		
+	}
+	
+	function onFileSelect(e : MenuEvent) 
+	{
+		if(mActiveEditor != null){
+			switch(e.menuItem.id) {
+				case "saveFile" :
+					mActiveEditor.save();
+				case "closeFile" :
+					closeAcitveEditor();
+			}
+		}
+	}
+	
+	function closeAcitveEditor() {
+		mEditorTabBars.removeTab(mEditorTabBars.selectedIndex);
 	}
 	
 	function updatePlayPauseButton() {

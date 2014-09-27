@@ -24,7 +24,7 @@ class AssetEditor extends Component
 	}
 	
 	public function save() {
-		
+		mAsset.save();
 	}
 	
 }
