@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <AssetsBrowser height="100%" width="15%" text="assets" id="assetsBrowser">
 	<vbox height="100%" width="100%">
-		<hbox width="100%" >
-			<button text="add" id="add"/>   
+		<hbox width="100%" > 
 			<button text="duplicate" id="duplicate"/>   
 			<button text="delete" id="delete" /> 
 			<button text="refresh" id="refresh" />

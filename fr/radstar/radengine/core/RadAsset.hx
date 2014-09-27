@@ -25,6 +25,8 @@ class RadAsset
 	public function getContent() : String {
 		if (FileSystem.exists(path))
 			content = File.getContent(path);
+		else 
+			content = "{}";
 		return content;
 	}
 	

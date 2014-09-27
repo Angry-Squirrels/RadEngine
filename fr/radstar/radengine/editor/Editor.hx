@@ -2,10 +2,15 @@ package fr.radstar.radengine.editor;
 import ash.core.Engine;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.RadGame;
+import haxe.ui.toolkit.containers.Grid;
+import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.containers.TabView;
+import haxe.ui.toolkit.controls.Text;
+import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.ClassManager;
 import haxe.ui.toolkit.core.Component;
+import haxe.ui.toolkit.core.PopupManager;
 import haxe.ui.toolkit.core.Root;
 import haxe.ui.toolkit.core.Toolkit;
 import haxe.ui.toolkit.core.XMLController;
@@ -57,6 +62,38 @@ class Editor extends XMLController
 		updatePlayPauseButton();
 	}
 	
+	public function newFile() : Void {
+		
+		var box = new Grid();
+		box.percentWidth = 100;
+		box.columns = 2;
+		
+		var nameTxt = new Text();
+		nameTxt.text = "Name:";
+		box.addChild(nameTxt);
+		
+		var nameInput = new TextInput();
+		nameInput.percentWidth = 100;
+		box.addChild(nameInput);
+		
+		var typeTxt = new Text();
+		typeTxt.text = "Type:";
+		box.addChild(typeTxt);
+		
+		var typeInput = new TextInput();
+		typeInput.percentWidth = 100;
+		box.addChild(typeInput);
+		
+		showCustomPopup(box, "New asset", PopupButton.CANCEL | PopupButton.OK, function(button : Dynamic) {
+			if (button == PopupButton.OK) {
+				var asset = new RadAsset(nameInput.text, typeInput.text);
+				open(asset);
+				asset.save();
+				mAssetsBrowser.refresh(null);
+			}
+		});
+	}
+	
 	public function open(asset : RadAsset) {
 		var editorClassName = "fr.radstar.radengine.editor." + asset.type+"Editor";
 		var editor : AssetEditor;
@@ -95,6 +132,8 @@ class Editor extends XMLController
 	{
 		if(mActiveEditor != null){
 			switch(e.menuItem.id) {
+				case "newFile" :
+					newFile();
 				case "saveFile" :
 					mActiveEditor.save();
 				case "closeFile" :

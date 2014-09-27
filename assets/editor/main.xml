@@ -3,6 +3,7 @@
     <menubar>
         <menubutton text="File" id="menuFile">
             <menu>
+				<menuitem text="New" id="newFile" />
                 <menuitem text="Save" id="saveFile" />
                 <menuitem text="Close" id="closeFile" />
             </menu>

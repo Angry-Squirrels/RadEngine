@@ -36,7 +36,7 @@ class AssetsBrowser extends Component
 		refresh(null);
 	}
 	
-	function refresh(e : UIEvent) : Void{
+	public function refresh(e : UIEvent) : Void{
 		var folderList = FileSystem.readDirectory("assets");
 		var accordion : Accordion = findChild("folders", Accordion, true);
 		accordion.addEventListener(UIEvent.CLICK, onAccordionClick);
