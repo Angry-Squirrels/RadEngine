@@ -16,8 +16,7 @@ import sys.FileSystem;
 class AssetsBrowser extends Component
 {
 	
-	var mActivePanel : Int;
-	var mActiveItem : Int;
+	var mActiveList : ListView;
 
 	public function new() 
 	{
@@ -30,16 +29,18 @@ class AssetsBrowser extends Component
 		var refreshbtn = findChild("refresh", Button, true);
 		refreshbtn.onClick = refresh;
 		
-		mActiveItem = -1;
-		mActivePanel = -1;
+		var deleteBtn = findChild("delete", Button, true);
+		deleteBtn.addEventListener(UIEvent.CLICK, onDeleteClick);
 		
-		refresh(null);
+		refresh();
 	}
 	
-	public function refresh(e : UIEvent) : Void{
+	public function refresh(e : UIEvent = null) : Void{
 		var folderList = FileSystem.readDirectory("assets");
 		var accordion : Accordion = findChild("folders", Accordion, true);
 		accordion.addEventListener(UIEvent.CLICK, onAccordionClick);
+		
+		mActiveList = null;
 		
 		accordion.removeAllChildren();
 		var i = 0;
@@ -57,32 +58,32 @@ class AssetsBrowser extends Component
 				list.dataSource.add( { text : file.split('.')[0], type : folder } );
 			accordion.addChild(list);
 		}
-		
-		if (mActivePanel != -1){
-			accordion.showPage(mActivePanel);
-			
-			if (mActiveItem != -1) 
-				for (child in accordion.children) 
-					if (Std.is(child, ListView)) 
-						if (cast(child, ListView).userData == mActiveItem) 
-							cast(child, ListView).selectedIndex = mActiveItem;
+	}
+	
+	function onDeleteClick(e:UIEvent):Void 
+	{
+		Editor.instance.askConfirmation(deleteSelectedItem);
+	}
+	
+	function deleteSelectedItem() {
+		if (mActiveList != null) {
+			var data = mActiveList.getItem(mActiveList.selectedIndex).data;
+			var type = data.type;
+			var name = data.text;
+			FileSystem.deleteFile('assets/$type/$name.radasset');
+			refresh();
 		}
 	}
 	
 	function onAccordionClick(e:UIEvent):Void 
 	{
 		var accordion : Accordion = cast e.displayObject;
-		mActivePanel = accordion.selectedIndex;
-		for (a in accordion.children) {
-			trace(cast(a, Component).text);
-		}
 	}
 	
 	function onListClicked(e:UIEvent):Void 
 	{
 		var list : ListView = cast e.displayObject;
-		if (list.selectedIndex != -1) 
-			mActiveItem = list.selectedIndex;
+		mActiveList = list;
 	}
 	
 	function onListDoubleClick(e:UIEvent):Void 

@@ -114,6 +114,13 @@ class Editor extends XMLController
 		return mAssetsBrowser;
 	}
 	
+	public function askConfirmation(func : Dynamic) {
+		showSimplePopup("Are you sure ?", "Confirm", PopupButton.YES | PopupButton.NO, function(button) {
+			if (button == PopupButton.YES)
+				func();
+		});
+	}
+	
 	function initToolkit(root : Root) {				
 		mRoot = root;
 	}
@@ -134,6 +141,7 @@ class Editor extends XMLController
 					newFile();
 				case "saveFile" :
 					mActiveEditor.save();
+					mAssetsBrowser.refresh();
 				case "closeFile" :
 					closeAcitveEditor();
 			}
