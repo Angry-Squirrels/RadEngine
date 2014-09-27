@@ -12,8 +12,8 @@
 		
 		<menubutton text="Edit" id="menuEdit">
 			<menu>
-				<menuitem text="Undo" id="UndoEdit" />
-                <menuitem text="Redo" id="RedoEdit" />
+				<menuitem text="Undo" id="undoEdit" />
+                <menuitem text="Redo" id="redoEdit" />
             </menu>
 		</menubutton>
 		

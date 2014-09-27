@@ -8,7 +8,7 @@ class History
 {
 	
 	var mCommands : Array<ICommand>;
-	var mCurrentPosition : UInt;
+	var mCurrentPosition : Int;
 
 	public function new() 
 	{
@@ -31,11 +31,12 @@ class History
 	}
 	
 	public function canUndo() : Bool {
+		trace(mCommands.length > 0 && mCurrentPosition > -1, mCommands.length, mCurrentPosition);
 		return mCommands.length > 0 && mCurrentPosition > -1;
 	}
 	
 	public function canRedo() : Bool {
-		return mCommands.length > 0 && mCurrentPosition < mCommands.length;
+		return mCommands.length > 0 && mCurrentPosition < mCommands.length-1;
 	}
 	
 	public function redo() {

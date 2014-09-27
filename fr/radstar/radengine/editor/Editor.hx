@@ -6,6 +6,7 @@ import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.containers.TabView;
+import haxe.ui.toolkit.controls.MenuItem;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.ClassManager;
@@ -128,9 +129,34 @@ class Editor extends XMLController
 	function bindEvents() 
 	{
 		attachEvent("menuFile", MenuEvent.SELECT, onFileSelect);
+		attachEvent("menuEdit", MenuEvent.OPEN, onEditOpen);
+		attachEvent("menuEdit", MenuEvent.SELECT, onEditSelect);
 		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
 		attachEvent("stop", UIEvent.CLICK, onStop);
 		
+	}
+	
+	function onEditOpen(e : MenuEvent) 
+	{
+		if (mActiveEditor != null) {
+			var undo : MenuItem = e.menu.findChild("undoEdit", MenuItem, true);
+			var redo : MenuItem = e.menu.findChild("redoEdit", MenuItem, true);
+			
+			undo.disabled = !mActiveEditor.getHistory().canUndo();
+			redo.disabled = !mActiveEditor.getHistory().canRedo();
+		}
+	}
+	
+	function onEditSelect(e : MenuEvent) {
+		var history = mActiveEditor.getHistory();
+		switch(e.menuItem.id) {
+			case "undoEdit" :
+				if (history.canUndo())
+					history.undo();
+			case "redoEdit" :
+				if (history.canRedo())
+					history.redo();
+		}
 	}
 	
 	function onFileSelect(e : MenuEvent) 
