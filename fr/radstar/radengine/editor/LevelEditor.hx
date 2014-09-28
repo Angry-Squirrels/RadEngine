@@ -4,6 +4,7 @@ import fr.radstar.radengine.core.Level;
 import fr.radstar.radengine.core.Prefab;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.editor.command.AddEntity;
+import fr.radstar.radengine.editor.command.RemoveEntity;
 import haxe.ui.toolkit.containers.Absolute;
 import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.Grid;
@@ -78,6 +79,7 @@ class LevelEditor extends AssetEditor
 		
 		var btnRemove = new Button();
 		btnRemove.text = "remove";
+		btnRemove.addEventListener(UIEvent.CLICK, onRemoveClicked);
 		
 		var btnRename = new Button();
 		btnRename.text = "rename";
@@ -137,6 +139,15 @@ class LevelEditor extends AssetEditor
 				mHistory.push(cmd);
 			}
 		});
+	}
+	
+	function onRemoveClicked(e : UIEvent):Void {
+		if (mEntityList.selectedIndex != -1) {
+			var ent = mEntityList.getItem(mEntityList.selectedIndex).data.entity;
+			var command = new RemoveEntity(ent);
+			command.exec();
+			mHistory.push(command);
+		}
 	}
 	
 	function onListSelect(e:UIEvent):Void 
