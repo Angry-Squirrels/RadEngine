@@ -1,14 +1,19 @@
 package fr.radstar.radengine.editor;
 import ash.core.Entity;
 import fr.radstar.radengine.core.Level;
+import fr.radstar.radengine.core.Prefab;
 import fr.radstar.radengine.core.RadAsset;
+import fr.radstar.radengine.editor.command.AddEntity;
 import haxe.ui.toolkit.containers.Absolute;
 import haxe.ui.toolkit.containers.Accordion;
+import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.HBox;
 import haxe.ui.toolkit.containers.ListView;
 import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.Text;
+import haxe.ui.toolkit.controls.TextInput;
+import haxe.ui.toolkit.core.PopupManager;
 import haxe.ui.toolkit.data.IDataSource;
 import haxe.ui.toolkit.events.UIEvent;
 
@@ -69,6 +74,7 @@ class LevelEditor extends AssetEditor
 		
 		var btnAdd = new Button();
 		btnAdd.text = "add";
+		btnAdd.addEventListener(UIEvent.CLICK, onAddClicked);
 		
 		var btnRemove = new Button();
 		btnRemove.text = "remove";
@@ -103,6 +109,36 @@ class LevelEditor extends AssetEditor
 		mInspector.addChild(mComponentInspector);
 	}
 	
+	function onAddClicked(e:UIEvent):Void 
+	{
+		var grid = new Grid();
+		grid.percentWidth = 100;
+		grid.columns = 2;
+		
+		var txt : Text = new Text();
+		txt.text = "Prefab : ";
+		var input = new TextInput();
+		input.percentWidth = 100;
+		
+		var instTxt = new Text();
+		instTxt.text = "Name : ";
+		var instInput = new TextInput();
+		instInput.percentWidth = 100;
+		
+		grid.addChild(txt);
+		grid.addChild(input);
+		grid.addChild(instTxt);
+		grid.addChild(instInput);
+		
+		PopupManager.instance.showCustom(grid, "Add entity", PopupButton.CANCEL | PopupButton.OK, function(button) {
+			if (button == PopupButton.OK) {
+				var cmd = new AddEntity(input.text, instInput.text);
+				cmd.exec();
+				mHistory.push(cmd);
+			}
+		});
+	}
+	
 	function onListSelect(e:UIEvent):Void 
 	{
 		if (mEntityList.selectedIndex == -1) return;
@@ -125,8 +161,10 @@ class LevelEditor extends AssetEditor
 		var data : IDataSource = mEntityList.dataSource;
 		data.moveFirst();
 		var current = data.get();
-		while (current.entity != ent) 
+		while (current.entity != ent) {
 			data.moveNext();
+			current = data.get();
+		}
 		data.remove();
 	}
 	
