@@ -1,15 +1,11 @@
 package fr.radstar.radengine.editor;
 import ash.core.Entity;
 import haxe.ui.toolkit.containers.Accordion;
-import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.HBox;
 import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
-import haxe.ui.toolkit.controls.CheckBox;
 import haxe.ui.toolkit.controls.Text;
-import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.Component;
-import Type;
 
 /**
  * ...
@@ -23,6 +19,8 @@ class ComponentInspector extends Component
 	var mVbox : VBox;
 	
 	var mAccordion : Accordion;
+	
+	var mEditor : LevelEditor;
 
 	public function new() 
 	{
@@ -55,6 +53,10 @@ class ComponentInspector extends Component
 		mVbox.addChild(mAccordion);
 	}
 	
+	public function setEditor(editor : LevelEditor) {
+		mEditor = editor;
+	}
+	
 	public function setEntity(ent : Entity) {
 		if (mEntity != null){
 			mEntity.componentRemoved.remove(onCompRemoved);
@@ -66,45 +68,12 @@ class ComponentInspector extends Component
 		mEntity.componentRemoved.add(onCompRemoved);
 		
 		mAccordion.removeAllChildren();
-		
 		for (comp in ent.components) {
-			var grid : Grid = new Grid();
-			grid.columns = 2;
-			grid.percentHeight = 100;
-			grid.percentWidth = 100;
-			grid.userData = comp;
-			var compName = Type.getClassName(Type.getClass(comp));
-			var nameSplit = compName.split('.');
-			compName = nameSplit[nameSplit.length - 1];
-			grid.text = compName;
-			mAccordion.addChild(grid);
-			
-			for (field in Reflect.fields(comp)) {
-				// ignore private field
-				if (field.indexOf("m") == 0) continue;
-				
-				var text : Text = new Text();
-				text.text = field;
-				grid.addChild(text);
-				
-				var input : Component;
-				
-				var value : Dynamic = Reflect.field(comp, field);
-				
-				switch(Type.typeof(value)) {
-					case ValueType.TBool :
-						var check = new CheckBox();
-						check.selected = cast value;
-						input = check;
-					default :
-						input = new TextInput();
-						input.value = value;
-				}
-				
-				input.percentWidth = 100;
-				
-				grid.addChild(input);
-			}
+			var viewer = new ComponentViewer();
+			viewer.init(comp, mEditor);
+			viewer.percentWidth = 100;
+			viewer.percentHeight = 100;
+			mAccordion.addChild(viewer);
 		}
 	}
 	

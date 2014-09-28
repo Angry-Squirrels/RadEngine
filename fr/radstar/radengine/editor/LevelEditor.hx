@@ -1,5 +1,7 @@
 package fr.radstar.radengine.editor;
 import ash.core.Entity;
+import fr.radstar.radengine.core.Level;
+import fr.radstar.radengine.core.RadAsset;
 import haxe.ui.toolkit.containers.Absolute;
 import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.HBox;
@@ -26,6 +28,7 @@ class LevelEditor extends AssetEditor
 	var mCurrentEntity : Entity;
 	
 	var mComponentInspector : ComponentInspector;
+	var mLevel:Level;
 
 	public function new() 
 	{
@@ -94,6 +97,7 @@ class LevelEditor extends AssetEditor
 		mInspector.addChild(mEntityList);
 		
 		mComponentInspector = new ComponentInspector();
+		mComponentInspector.setEditor(this);
 		mComponentInspector.percentWidth = 100;
 		mComponentInspector.percentHeight = 80;
 		mInspector.addChild(mComponentInspector);
@@ -124,6 +128,21 @@ class LevelEditor extends AssetEditor
 		while (current.entity != ent) 
 			data.moveNext();
 		data.remove();
+	}
+	
+	override public function load(asset:RadAsset) 
+	{
+		var level = new Level(asset.name);
+		level.load();
+		mAsset = level.asset;
+		RadGame.instance.gotoLevel(level);
+		mLevel = level;
+	}
+	
+	override public function save() 
+	{
+		mLevel.save(RadGame.instance.getEngine());
+		super.save();
 	}
 	
 }
