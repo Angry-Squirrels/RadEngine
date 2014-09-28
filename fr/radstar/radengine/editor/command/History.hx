@@ -31,7 +31,6 @@ class History
 	}
 	
 	public function canUndo() : Bool {
-		trace(mCommands.length > 0 && mCurrentPosition > -1, mCommands.length, mCurrentPosition);
 		return mCommands.length > 0 && mCurrentPosition > -1;
 	}
 	
