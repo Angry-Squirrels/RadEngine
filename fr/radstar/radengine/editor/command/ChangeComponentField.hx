@@ -24,12 +24,12 @@ class ChangeComponentField implements ICommand
 	
 	public function exec():Void 
 	{
-		Reflect.setField(mComp, mField, mNew);
+		Reflect.setProperty(mComp, mField, mNew);
 	}
 	
 	public function undo():Void 
 	{
-		Reflect.setField(mComp, mField, mOld);
+		Reflect.setProperty(mComp, mField, mOld);
 	}
 	
 	

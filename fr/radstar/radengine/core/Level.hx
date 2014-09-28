@@ -80,8 +80,9 @@ class Level
 						else
 							currentComp = prefab.get(compClass);
 							
-						for (field in Reflect.fields(comp.params)) 
-							Reflect.setField(currentComp, field, Reflect.field(comp.params, field));
+						for (field in Reflect.fields(comp.params)){ 
+							Reflect.setProperty(currentComp, field, Reflect.getProperty(comp.params, field));
+						}
 					}
 				}
 				

@@ -1,6 +1,7 @@
 package fr.radstar.radengine.core ;
 import ash.core.Entity;
 import haxe.Json;
+import Type;
 
 /**
  * ...
@@ -25,8 +26,14 @@ class Prefab extends Entity
 			var compClass = comp.name;
 			var newComp = Type.createInstance(Type.resolveClass(compClass), []);
 			var params = comp.params;
-			for (param in Reflect.fields(params))
-				Reflect.setProperty(newComp, param, Reflect.getProperty(params, param));
+			for (param in Reflect.fields(newComp)) {
+				var paramType : ValueType = Type.typeof(Reflect.field(newComp, param));
+				var newValue = Reflect.getProperty(params, param);
+				if (paramType == ValueType.TFloat) 
+					Reflect.setField(newComp, param, newValue * 1.0); // hack to get Flaot on neko
+				else
+					Reflect.setField(newComp, param, newValue);
+			}
 			add(newComp);
 		}
 	}

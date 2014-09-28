@@ -9,6 +9,7 @@ import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.Component;
 import haxe.ui.toolkit.events.UIEvent;
 import openfl.events.Event;
+import openfl.Lib;
 import Type;
 
 /**
@@ -22,6 +23,7 @@ class ComponentViewer extends Component
 	var mGrid : Grid;
 	var mInputs : Map<String, Component>;
 	var mEditor : LevelEditor;
+	var mLastChange : Int = 0;
 
 	public function new() 
 	{
@@ -69,8 +71,7 @@ class ComponentViewer extends Component
 			
 			input.percentWidth = 100;
 			input.addEventListener(UIEvent.CHANGE, onFieldChange);
-			input.userData = field;
-			
+			input.userData = {field : field, type : Type.typeof(Reflect.field(mComponent, field))};
 			mGrid.addChild(input);
 			mInputs[field] = input;
 			
@@ -82,10 +83,10 @@ class ComponentViewer extends Component
 	function onFieldChange(e:UIEvent):Void 
 	{
 		var input : Component = e.component;
-		var field = input.userData;
+		var field = input.userData.field;
 		var val : Dynamic;
 		
-		switch(Type.typeof(Reflect.field(mComponent, field))) {
+		switch(input.userData.type) {
 			case ValueType.TFloat :
 				val = Std.parseFloat(input.text);
 			case ValueType.TInt :
@@ -99,10 +100,14 @@ class ComponentViewer extends Component
 		var command = new ChangeComponentField(mComponent, field, val);
 		command.exec();
 		mEditor.getHistory().push(command);
+		
+		mLastChange = Lib.getTimer();
 	}
 	
 	function update(e:Event):Void 
 	{
+		var time = Lib.getTimer();
+		if (time - mLastChange < 250) return;
 		for (field in Reflect.fields(mComponent)) {
 			var currentInput : Component = mInputs[field];
 			if (Std.is(currentInput, CheckBox))
