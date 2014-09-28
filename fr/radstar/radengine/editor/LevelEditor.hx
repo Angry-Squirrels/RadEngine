@@ -5,6 +5,7 @@ import fr.radstar.radengine.core.Prefab;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.editor.command.AddEntity;
 import fr.radstar.radengine.editor.command.RemoveEntity;
+import fr.radstar.radengine.editor.command.RenameEntity;
 import haxe.ui.toolkit.containers.Absolute;
 import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.Grid;
@@ -14,7 +15,9 @@ import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
+import haxe.ui.toolkit.core.interfaces.IItemRenderer;
 import haxe.ui.toolkit.core.PopupManager;
+import haxe.ui.toolkit.core.renderers.ItemRenderer;
 import haxe.ui.toolkit.data.IDataSource;
 import haxe.ui.toolkit.events.UIEvent;
 
@@ -83,6 +86,7 @@ class LevelEditor extends AssetEditor
 		
 		var btnRename = new Button();
 		btnRename.text = "rename";
+		btnRename.addEventListener(UIEvent.CLICK, onRenameClicked);
 		
 		hbox.addChild(btnAdd);
 		hbox.addChild(btnRemove);
@@ -98,6 +102,7 @@ class LevelEditor extends AssetEditor
 		for (ent in entities) {
 			var data : IDataSource = mEntityList.dataSource;
 			data.add( { text : ent.name, entity : ent } );
+			ent.nameChanged.add(onEntityNameChanged);
 		}
 		
 		mEntityList.addEventListener(UIEvent.CLICK, onListSelect);
@@ -150,6 +155,39 @@ class LevelEditor extends AssetEditor
 		}
 	}
 	
+	function onRenameClicked(e:UIEvent):Void 
+	{
+		if (mEntityList.selectedIndex != -1) {
+			var grid = new Grid();
+			grid.percentWidth = 100;
+			grid.columns = 2;
+			
+			var text = new Text();
+			text.text = "New name : ";
+			
+			var input = new TextInput();
+			input.percentWidth = 100;
+			grid.addChild(text);
+			grid.addChild(input);
+			
+			var item : IItemRenderer = mEntityList.getItem(mEntityList.selectedIndex);
+			
+			var ent = item.data.entity;
+			
+			PopupManager.instance.showCustom(grid, "Rename entity", PopupButton.CANCEL | PopupButton.OK, function (button) {
+				if (button == PopupButton.OK) {
+					var engine = RadGame.instance.getEngine();
+					var exists = engine.getEntityByName(input.text) != null;
+					if (!exists) {
+						var command = new RenameEntity(ent, input.text);
+						command.exec();
+						mHistory.push(command);
+					}
+				}
+			});
+		}
+	}
+	
 	function onListSelect(e:UIEvent):Void 
 	{
 		if (mEntityList.selectedIndex == -1) return;
@@ -163,6 +201,7 @@ class LevelEditor extends AssetEditor
 	
 	function onEntityAdded(ent : Entity) 
 	{
+		ent.nameChanged.add(onEntityNameChanged);
 		var data : IDataSource = mEntityList.dataSource;
 		data.add( { text : ent.name, entity : ent } );
 	}
@@ -177,6 +216,24 @@ class LevelEditor extends AssetEditor
 			current = data.get();
 		}
 		data.remove();
+		ent.nameChanged.remove(onEntityNameChanged);
+	}
+	
+	function onEntityNameChanged(ent : Entity, name : String) 
+	{
+		var i = 0;
+		mEntityList.dataSource.moveFirst();
+		var data = mEntityList.dataSource.get();
+		while (data.entity != ent) {
+			i++;
+			mEntityList.dataSource.moveNext();
+			data = mEntityList.dataSource.get();
+		}
+		data.text = ent.name;
+		var item = mEntityList.getItem(i);
+		item.text = ent.name;
+		
+		mEntityList.invalidate();
 	}
 	
 	override public function load(asset:RadAsset) 
