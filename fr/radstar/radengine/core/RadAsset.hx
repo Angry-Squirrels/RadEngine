@@ -40,4 +40,8 @@ class RadAsset
 		return FileSystem.exists(path);
 	}
 	
+	public function equals(assets : RadAsset) {
+		return (path == assets.path);
+	}
+	
 }

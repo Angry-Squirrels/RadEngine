@@ -37,6 +37,10 @@ class AssetEditor extends Component
 		return mHistory;
 	}
 	
+	public function getAsset() : RadAsset {
+		return mAsset;
+	}
+	
 	function execute(command : ICommand) {
 		command.exec();
 		mHistory.push(command);

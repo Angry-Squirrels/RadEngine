@@ -140,8 +140,7 @@ class LevelEditor extends AssetEditor
 		PopupManager.instance.showCustom(grid, "Add entity", PopupButton.CANCEL | PopupButton.OK, function(button) {
 			if (button == PopupButton.OK) {
 				var cmd = new AddEntity(input.text, instInput.text);
-				cmd.exec();
-				mHistory.push(cmd);
+				execute(cmd);
 			}
 		});
 	}
@@ -150,8 +149,7 @@ class LevelEditor extends AssetEditor
 		if (mEntityList.selectedIndex != -1) {
 			var ent = mEntityList.getItem(mEntityList.selectedIndex).data.entity;
 			var command = new RemoveEntity(ent);
-			command.exec();
-			mHistory.push(command);
+			execute(command);
 		}
 	}
 	
@@ -180,8 +178,7 @@ class LevelEditor extends AssetEditor
 					var exists = engine.getEntityByName(input.text) != null;
 					if (!exists) {
 						var command = new RenameEntity(ent, input.text);
-						command.exec();
-						mHistory.push(command);
+						execute(command);
 					}
 				}
 			});

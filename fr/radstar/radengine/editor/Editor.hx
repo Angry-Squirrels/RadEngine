@@ -94,6 +94,17 @@ class Editor extends XMLController
 	}
 	
 	public function open(asset : RadAsset) {
+		var i = 0;
+		for (currentEditor in mOpenedEditors) {
+			if (currentEditor.getAsset().equals(asset)) {
+				mActiveEditor = currentEditor;
+				mEditorTabBars.selectedIndex = i;
+				return;
+			}
+			i++;
+		}
+		
+		
 		var editorClassName = "fr.radstar.radengine.editor." + asset.type+"Editor";
 		var editor : AssetEditor;
 		var editorClass = Type.resolveClass(editorClassName);
