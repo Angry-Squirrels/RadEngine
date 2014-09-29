@@ -68,9 +68,8 @@ class AssetsBrowser extends Component
 	function deleteSelectedItem() {
 		if (mActiveList != null) {
 			var data = mActiveList.getItem(mActiveList.selectedIndex).data;
-			var type = data.type;
-			var name = data.text;
-			FileSystem.deleteFile('assets/$type/$name.radasset');
+			var path = data.path;
+			FileSystem.deleteFile(path);
 			refresh();
 		}
 	}
