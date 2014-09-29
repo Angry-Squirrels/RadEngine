@@ -1,4 +1,6 @@
 package fr.radstar.radengine.editor.command;
+import fr.radstar.radengine.editor.AssetEditor;
+import openfl.events.Event;
 
 /**
  * ...
@@ -9,14 +11,19 @@ class History
 	
 	var mCommands : Array<ICommand>;
 	var mCurrentPosition : Int;
+	
+	var mAssetEditor : AssetEditor;
 
-	public function new() 
+	public function new(editor : AssetEditor) 
 	{
+		mAssetEditor = editor;
+		
 		mCommands = new Array<ICommand>();
 		mCurrentPosition = 0;
 	}
 	
 	public function push(command : ICommand) {
+		mAssetEditor.notifyChange();
 		while (mCommands.length - 1 > mCurrentPosition)
 			mCommands.pop();
 		mCommands.push(command);
@@ -24,7 +31,8 @@ class History
 	}
 	
 	public function undo() {
-		if(canUndo()){
+		if (canUndo()) {
+			mAssetEditor.notifyChange();
 			mCommands[mCurrentPosition].undo();
 			mCurrentPosition--;
 		}
@@ -39,7 +47,8 @@ class History
 	}
 	
 	public function redo() {
-		if(canRedo()){
+		if (canRedo()) {
+			mAssetEditor.notifyChange();
 			mCommands[mCurrentPosition].exec();
 			mCurrentPosition++;
 		}

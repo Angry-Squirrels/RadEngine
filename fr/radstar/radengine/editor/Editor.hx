@@ -1,5 +1,6 @@
 package fr.radstar.radengine.editor;
 import ash.core.Engine;
+import flash.events.Event;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.containers.Grid;
@@ -122,6 +123,23 @@ class Editor extends XMLController
 		mActiveEditor = editor;
 		mEditorTabBars.selectedIndex = mEditorTabBars.pageCount - 1;
 		mOpenedEditors.push(editor);
+		
+		editor.addEventListener(AssetEditor.MODIFIED, onEditorModified);
+		editor.addEventListener(AssetEditor.SAVED, onEditorSaved);
+	}
+	
+	function onEditorSaved(e:Event):Void 
+	{
+		var tab = mEditorTabBars.getTabButton(mEditorTabBars.selectedIndex);
+		tab.text = mOpenedEditors[mEditorTabBars.selectedIndex].getAsset().name;
+		tab.invalidate();
+	}
+	
+	function onEditorModified(e:Event):Void 
+	{
+		var tab = mEditorTabBars.getTabButton(mEditorTabBars.selectedIndex);
+		tab.text = mOpenedEditors[mEditorTabBars.selectedIndex].getAsset().name + " *";
+		tab.invalidate();
 	}
 	
 	public function getAssetsBrowser() : AssetsBrowser {
@@ -147,7 +165,7 @@ class Editor extends XMLController
 		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
 		attachEvent("stop", UIEvent.CLICK, onStop);
 		attachEvent("editors", UIEvent.CHANGE, onTabChanged);
-		
+		attachEvent("editors", UIEvent.CLICK, onTabChanged);
 	}
 	
 	function onTabChanged(e : UIEvent) 
