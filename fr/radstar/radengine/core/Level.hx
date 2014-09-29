@@ -17,11 +17,8 @@ class Level
 	
 	public var name : String;
 	
-	public function new(n : String) 
+	public function new() 
 	{
-		name = n;
-		asset = new RadAsset(name, "Level");
-		
 		mEntitys = new Array<Entity>();
 	}
 	
@@ -36,58 +33,61 @@ class Level
 		
 	}
 	
-	public function save(engine : Engine)
+	public function save(path : String)
 	{
+		if (asset == null)
+			asset = RadAsset.create(path, "Level");
+		
+		var engine = RadGame.instance.getEngine();
 		mEntitys = new Array<Entity>();
 		for (entity in engine.entities) mEntitys.push(entity);
 		
 		var entityTab = new Array<Dynamic>();
 		for (entity in mEntitys) {
 			var prefab : Prefab = cast entity;
-			var ent = { prefab : prefab.asset.name, name:prefab.name, params : prefab.diff() };
+			var ent = { prefab : prefab.asset.path, name:prefab.name, params : prefab.diff() };
 			entityTab.push(ent);
 		}
 		
 		var level = {entitys : entityTab};
-		var result = Json.stringify(level, null, '\t');
-		asset.content = result;
+		asset.content = level;
 		asset.save();
 	}
 	
-	public function load() 
+	public function load(path : String) 
 	{
-		if(asset.exists()){
-			var levelData = Json.parse(asset.getContent());
-			
-			// entity list
-			var entitys : Array<Dynamic> = levelData.entitys;
-			for (current in entitys) {
-				var prefab = new Prefab(current.prefab, current.name);
-				prefab.load();
-				
-				var comps : Array<Dynamic> = current.params;
-				for (comp in comps) {
-					var compClass = Type.resolveClass(comp.name);
-					if (comp.remove) 
-						prefab.remove(compClass);
-					else {
-						var currentComp : Dynamic;
-						if (!prefab.has(compClass))
-						{
-							currentComp = Type.createInstance(compClass, []);
-							prefab.add(currentComp);
-						}
-						else
-							currentComp = prefab.get(compClass);
-							
-						for (field in Reflect.fields(comp.params)){ 
-							Reflect.setProperty(currentComp, field, Reflect.getProperty(comp.params, field));
-						}
+		asset = RadAsset.get(path);
+		name = asset.name;
+		
+		var levelData = asset.getContent();
+		// entity list
+		var entitys : Array<Dynamic> = levelData.entitys;
+		for (current in entitys) {
+			var prefab = new Prefab(current.name);
+			prefab.load(current.prefab);
+			var comps : Array<Dynamic> = current.params;
+			for (comp in comps) {
+				var compClass = Type.resolveClass(comp.name);
+				if (comp.remove) 
+					prefab.remove(compClass);
+				else {
+					var currentComp : Dynamic;
+					if (!prefab.has(compClass))
+					{
+						currentComp = Type.createInstance(compClass, []);
+						prefab.add(currentComp);
+					}
+					else
+						currentComp = prefab.get(compClass);
+						
+					for (field in Reflect.fields(comp.params)){ 
+						Reflect.setProperty(currentComp, field, Reflect.getProperty(comp.params, field));
 					}
 				}
-				
-				mEntitys.push(prefab);
 			}
+			
+			mEntitys.push(prefab);
 		}
+		
 	}
 }

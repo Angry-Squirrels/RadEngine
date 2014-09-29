@@ -21,8 +21,8 @@ class AddEntity implements ICommand
 	
 	public function exec():Void 
 	{
-		var prefab = new Prefab(mPrefab, mName);
-		prefab.load();
+		var prefab = new Prefab(mName);
+		prefab.load(mPrefab);
 		RadGame.instance.getEngine().addEntity(prefab);
 	}
 	

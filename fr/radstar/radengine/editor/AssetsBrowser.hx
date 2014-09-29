@@ -55,7 +55,7 @@ class AssetsBrowser extends Component
 			list.addEventListener(UIEvent.DOUBLE_CLICK, onListDoubleClick);
 			list.addEventListener(UIEvent.CLICK, onListClicked);
 			for (file in files)
-				list.dataSource.add( { text : file.split('.')[0], type : folder } );
+				list.dataSource.add( { text : file.split('.')[0], type : folder, path:'assets/$folder/$file' } );
 			accordion.addChild(list);
 		}
 	}
@@ -91,7 +91,7 @@ class AssetsBrowser extends Component
 		var list : ListView = cast e.displayObject;
 		if (list.selectedIndex != -1) {
 			var data = list.getItem(list.selectedIndex).data;
-			var asset = new RadAsset(data.text, data.type);
+			var asset = RadAsset.get(data.path);
 			Editor.instance.open(asset);
 		}
 	}

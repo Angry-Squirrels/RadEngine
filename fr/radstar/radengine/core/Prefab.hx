@@ -12,37 +12,14 @@ class Prefab extends Entity
 	
 	public var asset : RadAsset;
 
-	public function new(name : String, instanceName : String) 
+	public function new(instanceName : String) 
 	{
 		super(instanceName);
-		
-		asset = new RadAsset(name, "Prefab");
 	}
 	
-	/*public function load() {
-		var loaded = Json.parse(asset.getContent());
-		var components : Array<Dynamic> = loaded.components;
-		for (comp in components) {
-			var compClass = comp.name;
-			var cls = Type.resolveClass(compClass);
-			var newComp = Type.createInstance(cls, []);
-			var params = comp.params;
-			for (param in Reflect.fields(newComp)) {
-				trace(param, Type.typeof(Reflect.field(newComp, param)));
-				var paramType : ValueType = Type.typeof(Reflect.field(newComp, param));
-				var newValue = Reflect.getProperty(params, param);
-				trace(param, newValue);
-				if (paramType == ValueType.TFloat) 
-					Reflect.setField(newComp, param, cast(newValue * 1.5 / 1.5, Float)); // hack to get Flaot on neko
-				else
-					Reflect.setField(newComp, param, newValue);
-				trace(param, Type.typeof(Reflect.field(newComp, param)));
-			}
-			add(newComp);
-		}
-	}*/
-	public function load() {
-		var loaded = Json.parse(asset.getContent());
+	public function load(path : String) {
+		asset = RadAsset.get(path);
+		var loaded = asset.getContent();
 		var components : Array<Dynamic> = loaded.components;
 		for (comp in components) {
 			var compClass = comp.name;
@@ -58,7 +35,7 @@ class Prefab extends Entity
 	 * List diff between the instance and the prefab
 	 */
 	public function diff() : Dynamic {
-		var loaded = Json.parse(asset.getContent());
+		var loaded = asset.getContent();
 		var baseComps : Array<Dynamic> = loaded.components;
 		var compToRemove = new Array<String>();
 		var diffs = new Array<Dynamic>();
@@ -133,7 +110,10 @@ class Prefab extends Entity
 		return diff;
 	}
 	
-	public function save() {
+	public function save(path : String) {
+		if (asset == null)
+			asset = RadAsset.create(path, "Prefab");
+		
 		// parse components
 		var compArray = new Array<Dynamic>();
 		for (comp in components) {
@@ -150,7 +130,7 @@ class Prefab extends Entity
 			components : compArray
 		};
 		
-		asset.content = Json.stringify(obj, null, '\t');
+		asset.content = obj;
 		asset.save();
 	}
 	

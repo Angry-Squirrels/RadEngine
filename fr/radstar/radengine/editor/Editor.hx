@@ -69,13 +69,13 @@ class Editor extends XMLController
 		box.percentWidth = 100;
 		box.columns = 2;
 		
-		var nameTxt = new Text();
-		nameTxt.text = "Name:";
-		box.addChild(nameTxt);
+		var pathTxt = new Text();
+		pathTxt.text = "Path:";
+		box.addChild(pathTxt);
 		
-		var nameInput = new TextInput();
-		nameInput.percentWidth = 100;
-		box.addChild(nameInput);
+		var pathInput = new TextInput();
+		pathInput.percentWidth = 100;
+		box.addChild(pathInput);
 		
 		var typeTxt = new Text();
 		typeTxt.text = "Type:";
@@ -87,7 +87,7 @@ class Editor extends XMLController
 		
 		showCustomPopup(box, "New asset", PopupButton.CANCEL | PopupButton.OK, function(button : Dynamic) {
 			if (button == PopupButton.OK) {
-				var asset = new RadAsset(nameInput.text, typeInput.text);
+				var asset = RadAsset.create(pathInput.text, typeInput.text);
 				open(asset);
 			}
 		});
@@ -103,7 +103,6 @@ class Editor extends XMLController
 			}
 			i++;
 		}
-		
 		
 		var editorClassName = "fr.radstar.radengine.editor." + asset.type+"Editor";
 		var editor : AssetEditor;

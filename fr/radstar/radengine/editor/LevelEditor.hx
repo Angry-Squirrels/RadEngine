@@ -235,16 +235,16 @@ class LevelEditor extends AssetEditor
 	
 	override public function load(asset:RadAsset) 
 	{
-		var level = new Level(asset.name);
-		level.load();
-		mAsset = level.asset;
+		super.load(asset);
+		var level = new Level();
+		level.load(asset.path);
 		RadGame.instance.gotoLevel(level);
 		mLevel = level;
 	}
 	
 	override public function save() 
 	{
-		mLevel.save(RadGame.instance.getEngine());
+		mLevel.save(mAsset.path);
 		super.save();
 	}
 	

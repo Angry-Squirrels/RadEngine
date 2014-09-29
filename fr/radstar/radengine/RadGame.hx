@@ -98,7 +98,7 @@ class RadGame extends Sprite
 	public function stop() {
 		var levelToReload = new Array<String>();
 		for (level in mLevels) 
-			levelToReload.push(level.name);
+			levelToReload.push(level.asset.path);
 		
 		unloadAllLevels();
 		
@@ -142,9 +142,9 @@ class RadGame extends Sprite
 	
 	// LEVELS HANDLING
 	
-	public function loadLevel(name : String, add : Bool = true) : Level {
-		var level = new Level(name);
-		level.load();
+	public function loadLevel(path : String, add : Bool = true) : Level {
+		var level = new Level();
+		level.load(path);
 		if (add) addLevel(level);
 		return level;
 	}

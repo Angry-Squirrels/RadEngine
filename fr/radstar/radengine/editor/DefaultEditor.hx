@@ -1,6 +1,7 @@
 package fr.radstar.radengine.editor;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.editor.command.ChangeText;
+import haxe.Json;
 import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.events.UIEvent;
 import openfl.events.Event;
@@ -59,15 +60,13 @@ class DefaultEditor extends AssetEditor
 	override public function load(asset:RadAsset) 
 	{
 		super.load(asset);
-			
-		var text = mAsset.getContent();
-		text = StringTools.replace(text, '\t', '    ');
+		var text = Json.stringify(mAsset.getContent(),null,"    ");
 		mTextEditor.text = text;
 		mPreviousText = mTextEditor.text;
 	}
 	
 	override public function save() {
-		mAsset.content = mTextEditor.text;
+		mAsset.content = Json.parse(mTextEditor.text);
 		mAsset.save();
 	}
 	

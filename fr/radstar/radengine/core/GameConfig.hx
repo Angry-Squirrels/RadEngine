@@ -17,14 +17,14 @@ class GameConfig
 
 	public function new() 
 	{
-		asset = new RadAsset("game", "Config");
+		asset = RadAsset.get("assets/Config/game.radasset");
 		
 		mGame = RadGame.instance;
 	}
 	
 	public function load() {
 		if(asset.exists()){
-			var loaded = Json.parse(asset.getContent());
+			var loaded = asset.getContent();
 			initialLevel = loaded.baseLevel;
 			systemList = loaded.systems;
 		}
@@ -54,7 +54,7 @@ class GameConfig
 		Reflect.setField(config, "baseLevel", mGame.getBaseLevel());
 		Reflect.setField(config, "systems", sysList);
 		
-		asset.content = Json.stringify(config, null, '\t');
+		asset.content = config;
 		asset.save();
 	}
 	
