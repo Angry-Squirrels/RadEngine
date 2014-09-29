@@ -87,7 +87,9 @@ class Editor extends XMLController
 		
 		showCustomPopup(box, "New asset", PopupButton.CANCEL | PopupButton.OK, function(button : Dynamic) {
 			if (button == PopupButton.OK) {
-				var asset = RadAsset.create(pathInput.text, typeInput.text);
+				var typeClass = Type.resolveClass("fr.radstar.radengine.core." + typeInput.text);
+				var struct = Reflect.callMethod(typeClass, Reflect.field(typeClass, "getAssetStructure"), []);
+				var asset = RadAsset.create(pathInput.text, typeInput.text, struct);
 				open(asset);
 			}
 		});
@@ -194,6 +196,7 @@ class Editor extends XMLController
 	}
 	
 	function closeAcitveEditor() {
+		mOpenedEditors.remove(mOpenedEditors[mEditorTabBars.selectedIndex]);
 		mEditorTabBars.removeTab(mEditorTabBars.selectedIndex);
 	}
 	

@@ -17,6 +17,14 @@ class Level
 	
 	public var name : String;
 	
+	
+	public static function getAssetStructure() : Dynamic {
+		return { 
+			type : "Level",
+			entitys : []
+		};
+	}
+	
 	public function new() 
 	{
 		mEntitys = new Array<Entity>();
@@ -36,7 +44,7 @@ class Level
 	public function save(path : String)
 	{
 		if (asset == null)
-			asset = RadAsset.create(path, "Level");
+			asset = RadAsset.create(path, "Level", Level.getAssetStructure());
 		
 		var engine = RadGame.instance.getEngine();
 		mEntitys = new Array<Entity>();

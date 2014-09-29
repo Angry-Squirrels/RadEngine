@@ -32,17 +32,25 @@ class RadAsset
 		return asset;
 	}
 	
-	public static function create(path : String, type : String) : RadAsset {
+	public static function create(path : String, type : String, baseContent : Dynamic) : RadAsset {
 		var asset = new RadAsset();
 		asset.path = path;
 		asset.type = type;
+		asset.content = baseContent;
 		mCache[path] = asset;
+		asset.setNameFromPath(path);
 		
 		return asset;
 	}
 	
 	function new() 
 	{
+	}
+	
+	function setNameFromPath(path : String) {
+		var p : Path = new Path(path);
+		this.name = p.file;
+		this.name = name.split('.')[0];
 	}
 	
 	public function getContent() : Dynamic {
@@ -52,9 +60,7 @@ class RadAsset
 	public function load(path : String) {
 		if (FileSystem.exists(path)) {
 			this.path = path;
-			var p : Path = new Path(path);
-			this.name = p.file;
-			this.name = name.split('.')[0];
+			setNameFromPath(path);
 			content = Json.parse(File.getContent(path));
 			this.type = content.type;
 		}
@@ -67,7 +73,7 @@ class RadAsset
 		var p : Path = new Path(path);
 		FileSystem.createDirectory(p.dir);
 		
-		File.saveContent(path, Json.stringify(content));
+		File.saveContent(path, Json.stringify(content, null, "\t"));
 	}
 	
 	public function exists() : Bool {

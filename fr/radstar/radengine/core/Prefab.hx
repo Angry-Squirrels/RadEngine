@@ -12,6 +12,13 @@ class Prefab extends Entity
 	
 	public var asset : RadAsset;
 
+	public static function getAssetStructure() : Dynamic {
+		return { 
+			type : "Prefab",
+			components : []
+		};
+	}
+	
 	public function new(instanceName : String) 
 	{
 		super(instanceName);
@@ -19,7 +26,9 @@ class Prefab extends Entity
 	
 	public function load(path : String) {
 		asset = RadAsset.get(path);
+		
 		var loaded = asset.getContent();
+		
 		var components : Array<Dynamic> = loaded.components;
 		for (comp in components) {
 			var compClass = comp.name;
@@ -112,7 +121,7 @@ class Prefab extends Entity
 	
 	public function save(path : String) {
 		if (asset == null)
-			asset = RadAsset.create(path, "Prefab");
+			asset = RadAsset.create(path, "Prefab", Prefab.getAssetStructure());
 		
 		// parse components
 		var compArray = new Array<Dynamic>();
