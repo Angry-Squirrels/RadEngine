@@ -19,6 +19,28 @@ class Prefab extends Entity
 		asset = new RadAsset(name, "Prefab");
 	}
 	
+	/*public function load() {
+		var loaded = Json.parse(asset.getContent());
+		var components : Array<Dynamic> = loaded.components;
+		for (comp in components) {
+			var compClass = comp.name;
+			var cls = Type.resolveClass(compClass);
+			var newComp = Type.createInstance(cls, []);
+			var params = comp.params;
+			for (param in Reflect.fields(newComp)) {
+				trace(param, Type.typeof(Reflect.field(newComp, param)));
+				var paramType : ValueType = Type.typeof(Reflect.field(newComp, param));
+				var newValue = Reflect.getProperty(params, param);
+				trace(param, newValue);
+				if (paramType == ValueType.TFloat) 
+					Reflect.setField(newComp, param, cast(newValue * 1.5 / 1.5, Float)); // hack to get Flaot on neko
+				else
+					Reflect.setField(newComp, param, newValue);
+				trace(param, Type.typeof(Reflect.field(newComp, param)));
+			}
+			add(newComp);
+		}
+	}*/
 	public function load() {
 		var loaded = Json.parse(asset.getContent());
 		var components : Array<Dynamic> = loaded.components;
@@ -26,14 +48,8 @@ class Prefab extends Entity
 			var compClass = comp.name;
 			var newComp = Type.createInstance(Type.resolveClass(compClass), []);
 			var params = comp.params;
-			for (param in Reflect.fields(newComp)) {
-				var paramType : ValueType = Type.typeof(Reflect.field(newComp, param));
-				var newValue = Reflect.getProperty(params, param);
-				if (paramType == ValueType.TFloat) 
-					Reflect.setField(newComp, param, newValue * 1.0); // hack to get Flaot on neko
-				else
-					Reflect.setField(newComp, param, newValue);
-			}
+			for (param in Reflect.fields(params))
+				Reflect.setProperty(newComp, param, Reflect.getProperty(params, param));
 			add(newComp);
 		}
 	}

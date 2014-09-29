@@ -90,7 +90,7 @@ class ComponentViewer extends Component
 			case ValueType.TFloat :
 				val = Std.parseFloat(input.text);
 			case ValueType.TInt :
-				val = Std.parseInt(input.text);
+				val = Std.parseFloat(input.text);
 			case ValueType.TBool :
 				val = cast(input, CheckBox).selected;
 			default :
@@ -107,7 +107,7 @@ class ComponentViewer extends Component
 	function update(e:Event):Void 
 	{
 		var time = Lib.getTimer();
-		if (time - mLastChange < 250) return;
+		if (time - mLastChange < 1000) return;
 		for (field in Reflect.fields(mComponent)) {
 			var currentInput : Component = mInputs[field];
 			if (Std.is(currentInput, CheckBox))
