@@ -13,10 +13,11 @@ import sys.FileSystem;
  * ...
  * @author Thomas BAUDON
  */
-class AssetsBrowser extends Component
+class AssetsBrowser extends VBox
 {
 	
 	var mActiveList : ListView;
+	var mFileExplorer : FileExplorer;
 
 	public function new() 
 	{
@@ -32,32 +33,29 @@ class AssetsBrowser extends Component
 		var deleteBtn = findChild("delete", Button, true);
 		deleteBtn.addEventListener(UIEvent.CLICK, onDeleteClick);
 		
-		refresh();
+		
+		mFileExplorer = new FileExplorer();
+		mFileExplorer.percentWidth = 100;
+		mFileExplorer.percentHeight = 100;
+		addChild(mFileExplorer);
+		mFileExplorer.explore('assets');
+		
+		mFileExplorer.addEventListener(FileExplorer.FILE_OPENED, onFileOpened);
+	}
+	
+	function onFileOpened(e:UIEvent):Void 
+	{
+		var file = e.data;
+		Editor.instance.open(RadAsset.get(file));
 	}
 	
 	public function refresh(e : UIEvent = null) : Void{
-		var folderList = FileSystem.readDirectory("assets");
-		var accordion : Accordion = findChild("folders", Accordion, true);
-		accordion.addEventListener(UIEvent.CLICK, onAccordionClick);
-		
-		mActiveList = null;
-		
-		accordion.removeAllChildren();
-		var i = 0;
-		for (folder in folderList) {
-			var files = FileSystem.readDirectory('assets/$folder');
-			var list = new ListView();
-			list.text = folder;
-			list.percentWidth = 100;
-			list.percentHeight = 100;
-			list.userData = i;
-			i++;
-			list.addEventListener(UIEvent.DOUBLE_CLICK, onListDoubleClick);
-			list.addEventListener(UIEvent.CLICK, onListClicked);
-			for (file in files)
-				list.dataSource.add( { text : file.split('.')[0], type : folder, path:'assets/$folder/$file' } );
-			accordion.addChild(list);
-		}
+		var dir = mFileExplorer.getCurrentDirectory();
+		mFileExplorer.explore(dir);
+	}
+	
+	public function getCurrentDirectory() : String {
+		return mFileExplorer.getCurrentDirectory();
 	}
 	
 	function onDeleteClick(e:UIEvent):Void 
@@ -66,32 +64,17 @@ class AssetsBrowser extends Component
 	}
 	
 	function deleteSelectedItem() {
-		if (mActiveList != null) {
-			var data = mActiveList.getItem(mActiveList.selectedIndex).data;
-			var path = data.path;
-			FileSystem.deleteFile(path);
+		var file = mFileExplorer.getSelectedFile();
+		if (file != null) {
+			try{
+				if (FileSystem.isDirectory(file)) 
+					FileSystem.deleteDirectory(file);
+				else
+					FileSystem.deleteFile(file);
+			}catch (e : Dynamic) {
+				trace(e);
+			}
 			refresh();
-		}
-	}
-	
-	function onAccordionClick(e:UIEvent):Void 
-	{
-		var accordion : Accordion = cast e.displayObject;
-	}
-	
-	function onListClicked(e:UIEvent):Void 
-	{
-		var list : ListView = cast e.displayObject;
-		mActiveList = list;
-	}
-	
-	function onListDoubleClick(e:UIEvent):Void 
-	{
-		var list : ListView = cast e.displayObject;
-		if (list.selectedIndex != -1) {
-			var data = list.getItem(list.selectedIndex).data;
-			var asset = RadAsset.get(data.path);
-			Editor.instance.open(asset);
 		}
 	}
 	

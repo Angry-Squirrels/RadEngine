@@ -1,18 +1,15 @@
 package fr.radstar.radengine.editor;
-import ash.core.Engine;
 import flash.events.Event;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.containers.Grid;
-import haxe.ui.toolkit.containers.VBox;
-import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.containers.TabView;
+import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.MenuItem;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.ClassManager;
-import haxe.ui.toolkit.core.Component;
-import haxe.ui.toolkit.core.PopupManager;
+import haxe.ui.toolkit.core.PopupManager.PopupButton;
 import haxe.ui.toolkit.core.Root;
 import haxe.ui.toolkit.core.Toolkit;
 import haxe.ui.toolkit.core.XMLController;
@@ -70,13 +67,13 @@ class Editor extends XMLController
 		box.percentWidth = 100;
 		box.columns = 2;
 		
-		var pathTxt = new Text();
-		pathTxt.text = "Path:";
-		box.addChild(pathTxt);
+		var nameTxt = new Text();
+		nameTxt.text = "Name:";
+		box.addChild(nameTxt);
 		
-		var pathInput = new TextInput();
-		pathInput.percentWidth = 100;
-		box.addChild(pathInput);
+		var nameInput = new TextInput();
+		nameInput.percentWidth = 100;
+		box.addChild(nameInput);
 		
 		var typeTxt = new Text();
 		typeTxt.text = "Type:";
@@ -90,7 +87,9 @@ class Editor extends XMLController
 			if (button == PopupButton.OK) {
 				var typeClass = Type.resolveClass("fr.radstar.radengine.core." + typeInput.text);
 				var struct = Reflect.callMethod(typeClass, Reflect.field(typeClass, "getAssetStructure"), []);
-				var asset = RadAsset.create(pathInput.text, typeInput.text, struct);
+				var name = nameInput.text.split('.')[0];
+				var path = mAssetsBrowser.getCurrentDirectory() + "/" + name+".radasset";
+				var asset = RadAsset.create(path, typeInput.text, struct);
 				open(asset);
 			}
 		});
