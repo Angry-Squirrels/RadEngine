@@ -18,8 +18,6 @@
 		</menubutton>
 		
         <spacer width="25"/>
-        <button text="play" id="play/pause" toggle="true"/>   
-        <button text="stop" id="stop" /> 
     </menubar>
     <hbox width="100%" height="100%">
 		<import resource="editor/AssetsBrowser.xml" />

@@ -11,6 +11,7 @@ import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.HBox;
 import haxe.ui.toolkit.containers.ListView;
+import haxe.ui.toolkit.containers.MenuBar;
 import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.Text;
@@ -20,6 +21,7 @@ import haxe.ui.toolkit.core.PopupManager;
 import haxe.ui.toolkit.core.renderers.ItemRenderer;
 import haxe.ui.toolkit.data.IDataSource;
 import haxe.ui.toolkit.events.UIEvent;
+import openfl.Lib;
 
 /**
  * ...
@@ -38,6 +40,11 @@ class LevelEditor extends AssetEditor
 	
 	var mComponentInspector : ComponentInspector;
 	var mLevel:Level;
+	
+	var mMenubar : MenuBar;
+	
+	var mPlayPauseBtn : Button;
+	var mStopBtn : Button;
 
 	public function new() 
 	{
@@ -49,11 +56,36 @@ class LevelEditor extends AssetEditor
 		
 		addChild(mHbox);
 		
+		var vbox = new VBox();
+		vbox.percentWidth = 80;
+		vbox.percentHeight = 100;
+		
+		mMenubar = new MenuBar();
+		
+		
+		mPlayPauseBtn = new Button();
+		mPlayPauseBtn.text = "Play";
+		mPlayPauseBtn.addEventListener(UIEvent.CLICK, onPlayPauseClick);
+		updatePlayPauseBtn();
+		
+		mMenubar.addChild(mPlayPauseBtn);
+		
+		mStopBtn = new Button();
+		mStopBtn.text = "Stop";
+		mStopBtn.addEventListener(UIEvent.CLICK, onStopClick);
+		
+		mMenubar.addChild(mStopBtn);
+		
+		vbox.addChild(mMenubar);
+		
 		mLevelArea = new Absolute();
-		mLevelArea.percentWidth = 80;
+		mLevelArea.percentWidth = 100;
 		mLevelArea.percentHeight = 100;
 		mLevelArea.sprite.addChild(RadGame.instance.getRenderArea());
-		mHbox.addChild(mLevelArea);
+		mLevelArea.style.backgroundColor = Lib.current.stage.color;
+		vbox.addChild(mLevelArea);
+		
+		mHbox.addChild(vbox);
 		
 		mInspector = new VBox();
 		mInspector.percentWidth = 20;
@@ -61,6 +93,30 @@ class LevelEditor extends AssetEditor
 		mHbox.addChild(mInspector);
 		
 		initEntityList();
+	}
+	
+	function updatePlayPauseBtn() {
+		if (RadGame.instance.isPaused()){
+			mPlayPauseBtn.selected = false;
+			mPlayPauseBtn.text = "Play";
+		}else {
+			mPlayPauseBtn.selected = true;
+			mPlayPauseBtn.text = "Pause";
+		}
+	}
+	
+	function onStopClick(e:UIEvent):Void 
+	{
+		mPlayPauseBtn.text = "Play";
+		mPlayPauseBtn.selected = false;
+		RadGame.instance.stop();
+		updatePlayPauseBtn();
+	}
+	
+	function onPlayPauseClick(e:UIEvent):Void 
+	{
+		RadGame.instance.togglePause();
+		updatePlayPauseBtn();
 	}
 	
 	function initEntityList() 

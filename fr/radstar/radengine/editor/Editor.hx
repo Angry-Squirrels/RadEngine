@@ -57,8 +57,6 @@ class Editor extends XMLController
 		bindEvents();
 		
 		open(mGame.getLoadedLevels()[0].asset);
-		
-		updatePlayPauseButton();
 	}
 	
 	public function newFile() : Void {
@@ -161,8 +159,6 @@ class Editor extends XMLController
 		attachEvent("menuFile", MenuEvent.SELECT, onFileSelect);
 		attachEvent("menuEdit", MenuEvent.OPEN, onEditOpen);
 		attachEvent("menuEdit", MenuEvent.SELECT, onEditSelect);
-		attachEvent("play/pause", UIEvent.CLICK, onPlayPauseClicked);
-		attachEvent("stop", UIEvent.CLICK, onStop);
 		attachEvent("editors", UIEvent.CHANGE, onTabChanged);
 		attachEvent("editors", UIEvent.CLICK, onTabChanged);
 	}
@@ -215,26 +211,5 @@ class Editor extends XMLController
 	function closeAcitveEditor() {
 		mOpenedEditors.remove(mOpenedEditors[mEditorTabBars.selectedIndex]);
 		mEditorTabBars.removeTab(mEditorTabBars.selectedIndex);
-	}
-	
-	function updatePlayPauseButton() {
-		var playPause : Button = cast getComponent("play/pause");
-		if (mGame.isPaused())
-			playPause.text = "play";
-		else
-			playPause.text = "pause";
-	}
-	
-	function onPlayPauseClicked(e : UIEvent) 
-	{
-		mGame.togglePause();
-		updatePlayPauseButton();
-	}
-	
-	function onStop(e : UIEvent) {
-		var playPause : Button = cast getComponent("play/pause");
-		playPause.text = "play";
-		playPause.selected = false;
-		mGame.stop();
 	}
 }
