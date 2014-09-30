@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <AssetsBrowser height="100%" width="15%" text="assets" id="assetsBrowser">
 	<hbox width="100%" > 
-		<button text="delete" id="delete" /> 
-		<button text="refresh" id="refresh" />
+		<style>
+			Button.assetBar{
+				width: 16;
+				height: 16;
+				iconPosition: "middle";
+			}
+			
+			#newFile{
+				icon: "editor/icons/file-new.png";
+			}
+			#newFolder{
+				icon: "editor/icons/folder-new.png";
+			}
+			#delete{
+				icon: "editor/icons/delete.png";
+			}
+			#refresh{
+				icon: "editor/icons/refresh.png";
+			}
+		</style>
+		<button id="newFile" styleName="assetBar" /> 
+		<button id="newFolder" styleName="assetBar" />
+		<button id="delete" styleName="assetBar" /> 
+		<button id="refresh" styleName="assetBar" />
 	</hbox>
 </AssetsBrowser>
