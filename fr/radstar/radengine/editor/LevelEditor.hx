@@ -1,13 +1,11 @@
 package fr.radstar.radengine.editor;
 import ash.core.Entity;
 import fr.radstar.radengine.core.Level;
-import fr.radstar.radengine.core.Prefab;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.editor.command.AddEntity;
 import fr.radstar.radengine.editor.command.RemoveEntity;
 import fr.radstar.radengine.editor.command.RenameEntity;
 import haxe.ui.toolkit.containers.Absolute;
-import haxe.ui.toolkit.containers.Accordion;
 import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.HBox;
 import haxe.ui.toolkit.containers.ListView;
@@ -18,7 +16,6 @@ import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
 import haxe.ui.toolkit.core.interfaces.IItemRenderer;
 import haxe.ui.toolkit.core.PopupManager;
-import haxe.ui.toolkit.core.renderers.ItemRenderer;
 import haxe.ui.toolkit.data.IDataSource;
 import haxe.ui.toolkit.events.UIEvent;
 import openfl.Lib;
@@ -82,6 +79,7 @@ class LevelEditor extends AssetEditor
 		mLevelArea.percentWidth = 100;
 		mLevelArea.percentHeight = 100;
 		mLevelArea.sprite.addChild(RadGame.instance.getRenderArea());
+		mLevelArea.clipContent = true;
 		mLevelArea.style.backgroundColor = Lib.current.stage.color;
 		vbox.addChild(mLevelArea);
 		
@@ -174,28 +172,31 @@ class LevelEditor extends AssetEditor
 	
 	function onAddClicked(e:UIEvent):Void 
 	{
-		var grid = new Grid();
-		grid.percentWidth = 100;
-		grid.columns = 2;
+		var vbox = new VBox();
+		vbox.percentWidth = 100;
 		
-		var txt : Text = new Text();
-		txt.text = "Prefab : ";
-		var input = new TextInput();
-		input.percentWidth = 100;
+		var fileExplorer = new FileExplorer();
+		fileExplorer.percentWidth = 100;
+		fileExplorer.height = 200;
+		//fileExplorer.percentHeight = 100;
+		fileExplorer.explore('assets');
+		vbox.addChild(fileExplorer);
+		
+		var hbox = new HBox();
+		hbox.percentWidth = 100;
 		
 		var instTxt = new Text();
 		instTxt.text = "Name : ";
 		var instInput = new TextInput();
 		instInput.percentWidth = 100;
 		
-		grid.addChild(txt);
-		grid.addChild(input);
-		grid.addChild(instTxt);
-		grid.addChild(instInput);
+		vbox.addChild(hbox);
+		hbox.addChild(instTxt);
+		hbox.addChild(instInput);
 		
-		PopupManager.instance.showCustom(grid, "Add entity", PopupButton.CANCEL | PopupButton.OK, function(button) {
+		PopupManager.instance.showCustom(vbox, "Add entity", PopupButton.CANCEL | PopupButton.OK, function(button) {
 			if (button == PopupButton.OK) {
-				var cmd = new AddEntity(input.text, instInput.text);
+				var cmd = new AddEntity(fileExplorer.getSelectedFile(), instInput.text);
 				execute(cmd);
 			}
 		});
