@@ -9,6 +9,7 @@ import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
+import haxe.ui.toolkit.core.PopupManager;
 import haxe.ui.toolkit.events.UIEvent;
 
 /**
@@ -51,8 +52,9 @@ class PrefabEditor extends AssetEditor
 		var hbox = new HBox();
 		hbox.percentWidth = 100;
 		
-		var addBtn = new Button();
+		var addBtn : Button = new Button();
 		addBtn.text = "Add";
+		addBtn.addEventListener(UIEvent.CLICK, addComponent);
 		hbox.addChild(addBtn);
 		
 		var removeBtn = new Button();
@@ -96,6 +98,29 @@ class PrefabEditor extends AssetEditor
 			//input.text = Reflect.field(comp, field);
 			mCompEditorGrid.addChild(input);
 		}
+	}
+	
+	function addComponent(e : UIEvent) {
+		
+		var grid = new Grid();
+		grid.percentWidth = 100;
+		
+		var text = new Text();
+		text.text = "Name"; 
+		grid.addChild(text);
+		
+		var input = new TextInput();
+		input.percentWidth =  100;
+		grid.addChild(input);
+		
+		PopupManager.instance.showCustom(grid, "Add comp", PopupButton.CANCEL | PopupButton.OK, function (button) {
+			if (button == PopupButton.OK) {
+				var compClass = Type.resolveClass("fr.radstar.radengine.components." + input.text);
+				var comp = Type.createInstance(compClass,[]);
+				mPrefab.add(comp);
+				refreshList();
+			}
+		});
 	}
 	
 	function initCompEditor():Void 
