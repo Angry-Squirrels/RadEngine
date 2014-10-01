@@ -56,7 +56,7 @@ class AssetEditor extends Component
 		return mAsset;
 	}
 	
-	function execute(command : ICommand) {
+	public function execute(command : ICommand) {
 		command.exec();
 		mHistory.push(command);
 	}

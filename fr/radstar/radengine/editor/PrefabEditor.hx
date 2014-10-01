@@ -3,6 +3,7 @@ import ash.core.Entity;
 import fr.radstar.radengine.core.Prefab;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.editor.command.AddComponentToPrefab;
+import fr.radstar.radengine.editor.command.ChangeComponentField;
 import fr.radstar.radengine.editor.command.RemoveComponentFromPrefab;
 import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.HBox;
@@ -10,10 +11,13 @@ import haxe.ui.toolkit.containers.ListView;
 import haxe.ui.toolkit.containers.MenuBar;
 import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.Button;
+import haxe.ui.toolkit.controls.CheckBox;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
+import haxe.ui.toolkit.core.Component;
 import haxe.ui.toolkit.core.PopupManager;
 import haxe.ui.toolkit.events.UIEvent;
+import Type;
 
 /**
  * ...
@@ -24,7 +28,7 @@ class PrefabEditor extends AssetEditor
 	
 	var mPrefab : Prefab;
 	var mHbox : HBox;
-	var mCompEditorGrid : Grid;
+	var mCompEditorBox : VBox;
 	var mCompListBox : VBox;
 	var mComponentList:ListView;
 	var mCompeditorTitle : Text;
@@ -90,18 +94,13 @@ class PrefabEditor extends AssetEditor
 	function editComponent(name : String, comp : Dynamic) {
 		mCompeditorTitle.text = name;
 		
-		mCompEditorGrid.removeAllChildren();
+		mCompEditorBox.removeAllChildren();
 		
-		for (field in Reflect.fields(comp)) {
-			var txt = new Text();
-			txt.text = field;
-			mCompEditorGrid.addChild(txt);
-			
-			var input = new TextInput();
-			input.percentWidth = 100;
-			//input.text = Reflect.field(comp, field);
-			mCompEditorGrid.addChild(input);
-		}
+		var compViewer = new ComponentViewer();
+		compViewer.init(comp, this);
+		compViewer.percentWidth = 100;
+		compViewer.percentHeight = 100;
+		mCompEditorBox.addChild(compViewer);
 	}
 	
 	function onAddClicked(e : UIEvent) {
@@ -142,15 +141,14 @@ class PrefabEditor extends AssetEditor
 		vbox.percentWidth = 80;
 		mHbox.addChild(vbox);
 		
-		mCompEditorGrid = new Grid();
-		mCompEditorGrid.columns = 2;
-		mCompEditorGrid.percentWidth = 100;
-		mCompEditorGrid.percentHeight = 100;
+		mCompEditorBox = new VBox();
+		mCompEditorBox.percentWidth = 100;
+		mCompEditorBox.percentHeight = 100;
 		
 		mCompeditorTitle = new Text();
 		vbox.addChild(mCompeditorTitle);
 		
-		vbox.addChild(mCompEditorGrid);
+		vbox.addChild(mCompEditorBox);
 	}
 	
 	function refreshList() {

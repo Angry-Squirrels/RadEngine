@@ -22,7 +22,7 @@ class ComponentViewer extends Component
 	var mComponent : Dynamic;
 	var mGrid : Grid;
 	var mInputs : Map<String, Component>;
-	var mEditor : LevelEditor;
+	var mEditor : AssetEditor;
 	var mLastChange : Int = 0;
 
 	public function new() 
@@ -32,7 +32,7 @@ class ComponentViewer extends Component
 		mInputs = new  Map<String, Component>();
 	}
 	
-	public function init(comp : Dynamic, editor : LevelEditor) 
+	public function init(comp : Dynamic, editor : AssetEditor) 
 	{
 		mEditor = editor;
 		mComponent = comp;
@@ -98,8 +98,7 @@ class ComponentViewer extends Component
 		}
 		
 		var command = new ChangeComponentField(mComponent, field, val);
-		command.exec();
-		mEditor.getHistory().push(command);
+		mEditor.execute(command);
 		
 		mLastChange = Lib.getTimer();
 	}
