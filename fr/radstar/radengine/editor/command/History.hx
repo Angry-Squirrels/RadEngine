@@ -1,5 +1,5 @@
 package fr.radstar.radengine.editor.command;
-import fr.radstar.radengine.editor.AssetEditor;
+import fr.radstar.radengine.editor.asset.AssetEditor;
 import openfl.events.Event;
 
 /**

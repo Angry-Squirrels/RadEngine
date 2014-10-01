@@ -1,10 +1,12 @@
 package fr.radstar.radengine.editor;
 import flash.events.Event;
 import fr.radstar.radengine.core.RadAsset;
+import fr.radstar.radengine.editor.asset.AssetEditor;
+import fr.radstar.radengine.editor.asset.DefaultEditor;
+import fr.radstar.radengine.editor.components.AssetsBrowser;
 import fr.radstar.radengine.RadGame;
 import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.TabView;
-import haxe.ui.toolkit.controls.Button;
 import haxe.ui.toolkit.controls.MenuItem;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
@@ -130,7 +132,7 @@ class Editor extends XMLController
 			i++;
 		}
 		
-		var editorClassName = "fr.radstar.radengine.editor." + asset.type+"Editor";
+		var editorClassName = "fr.radstar.radengine.editor.asset." + asset.type+"Editor";
 		var editor : AssetEditor;
 		var editorClass = Type.resolveClass(editorClassName);
 		

@@ -58,7 +58,7 @@ class Level
 		}
 		
 		var level = {entitys : entityTab};
-		asset.content = level;
+		asset.setContent(level);
 		asset.save();
 	}
 	

@@ -128,9 +128,10 @@ class Prefab extends Entity
 		for (comp in components) {
 			var compName = Type.getClassName(Type.getClass(comp));
 			var params = { };
-			for (field in Reflect.fields(comp)) 
+			for (field in Reflect.fields(comp)) { 
 				if (field.indexOf("m") != 0) 
 					Reflect.setField(params, field, Reflect.getProperty(comp, field));
+			}
 			var pushedComp = { name : compName, params : params };
 			compArray.push(pushedComp);
 		}
@@ -139,7 +140,7 @@ class Prefab extends Entity
 			components : compArray
 		};
 		
-		asset.content = obj;
+		asset.setContent(obj);
 		asset.save();
 	}
 	

@@ -13,8 +13,9 @@ class RadAsset
 	
 	public var path : String;
 	public var type : String;
-	public var content : Dynamic;
 	public var name : String;
+	
+	var mContent : Dynamic;
 	
 	private static var mCache : Map<String, RadAsset>;
 	
@@ -36,10 +37,15 @@ class RadAsset
 		var asset = new RadAsset();
 		asset.path = path;
 		asset.type = type;
-		asset.content = baseContent;
+		asset.mContent = baseContent;
 		mCache[path] = asset;
 		asset.setNameFromPath(path);
 		
+		return asset;
+	}
+	
+	public static function getEmpty(type : String) : RadAsset {
+		var asset = create('empty/$type', type, null );
 		return asset;
 	}
 	
@@ -54,26 +60,40 @@ class RadAsset
 	}
 	
 	public function getContent() : Dynamic {
-		return content;
+		return mContent;
+	}
+	
+	public function setContent(content) : Dynamic {
+		mContent = content;
+		return mContent;
 	}
 	
 	public function load(path : String) {
 		if (FileSystem.exists(path)) {
 			this.path = path;
 			setNameFromPath(path);
-			content = Json.parse(File.getContent(path));
-			this.type = content.type;
+			mContent = Json.parse(File.getContent(path));
+			this.type = mContent.type;
 		}
 	}
 	
 	public function save() {
-		if (content == null)
-			content = { };
-		Reflect.setField(content, "type", type);
+		if (mContent == null)
+			mContent = { };
+		Reflect.setField(mContent, "type", type);
 		var p : Path = new Path(path);
 		FileSystem.createDirectory(p.dir);
 		
-		File.saveContent(path, Json.stringify(content, null, "\t"));
+		File.saveContent(path, Json.stringify(mContent, null, "\t"));
+	}
+	
+	public static function replacer(key : Dynamic, value : Dynamic) : Dynamic {
+		if (Type.getClass(value) == RadAsset)
+		{
+			return cast(value, RadAsset).path;
+		}
+		else 
+			return value;
 	}
 	
 	public function exists() : Bool {

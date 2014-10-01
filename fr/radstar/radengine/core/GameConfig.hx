@@ -54,7 +54,7 @@ class GameConfig
 		Reflect.setField(config, "baseLevel", mGame.getBaseLevel());
 		Reflect.setField(config, "systems", sysList);
 		
-		asset.content = config;
+		asset.setContent(config);
 		asset.save();
 	}
 	
