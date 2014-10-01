@@ -16,6 +16,7 @@ import haxe.ui.toolkit.core.XMLController;
 import haxe.ui.toolkit.events.MenuEvent;
 import haxe.ui.toolkit.events.UIEvent;
 import haxe.ui.toolkit.themes.GradientTheme;
+import sys.FileSystem;
 
 /**
  * ...
@@ -59,7 +60,7 @@ class Editor extends XMLController
 		open(mGame.getLoadedLevels()[0].asset);
 	}
 	
-	public function newFile() : Void {
+	public function newFile(e : UIEvent = null ) : Void {
 		
 		var box = new Grid();
 		box.percentWidth = 100;
@@ -89,6 +90,31 @@ class Editor extends XMLController
 				var path = mAssetsBrowser.getCurrentDirectory() + "/" + name+".radasset";
 				var asset = RadAsset.create(path, typeInput.text, struct);
 				open(asset);
+				mAssetsBrowser.refresh();
+			}
+		});
+	}
+	
+	public function newFolder(e : UIEvent = null ) : Void {
+		
+		var box = new Grid();
+		box.percentWidth = 100;
+		box.columns = 2;
+		
+		var nameTxt = new Text();
+		nameTxt.text = "Name:";
+		box.addChild(nameTxt);
+		
+		var nameInput = new TextInput();
+		nameInput.percentWidth = 100;
+		box.addChild(nameInput);
+		
+		showCustomPopup(box, "New folder", PopupButton.CANCEL | PopupButton.OK, function(button : Dynamic) {
+			if (button == PopupButton.OK) {
+				var name = nameInput.text.split('.')[0];
+				var path = mAssetsBrowser.getCurrentDirectory() + "/" + name;
+				FileSystem.createDirectory(path);
+				mAssetsBrowser.refresh();
 			}
 		});
 	}

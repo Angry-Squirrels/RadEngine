@@ -27,12 +27,17 @@ class AssetsBrowser extends VBox
 	override function postInitialize() : Void {
 		super.postInitialize();	
 		
+		var newFileBtn = findChild("newFile", Button, true);
+		newFileBtn.onClick = Editor.instance.newFile;
+		
+		var newFolderBtn = findChild("newFolder", Button, true);
+		newFolderBtn.onClick = Editor.instance.newFolder;
+		
 		var refreshbtn = findChild("refresh", Button, true);
 		refreshbtn.onClick = refresh;
 		
 		var deleteBtn = findChild("delete", Button, true);
-		deleteBtn.addEventListener(UIEvent.CLICK, onDeleteClick);
-		
+		deleteBtn.onClick = onDeleteClick;
 		
 		mFileExplorer = new FileExplorer();
 		mFileExplorer.percentWidth = 100;
