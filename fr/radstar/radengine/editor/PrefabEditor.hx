@@ -1,7 +1,9 @@
 package fr.radstar.radengine.editor;
+import ash.core.Entity;
 import fr.radstar.radengine.core.Prefab;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.editor.command.AddComponentToPrefab;
+import fr.radstar.radengine.editor.command.RemoveComponentFromPrefab;
 import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.HBox;
 import haxe.ui.toolkit.containers.ListView;
@@ -55,11 +57,12 @@ class PrefabEditor extends AssetEditor
 		
 		var addBtn : Button = new Button();
 		addBtn.text = "Add";
-		addBtn.addEventListener(UIEvent.CLICK, addComponent);
+		addBtn.addEventListener(UIEvent.CLICK, onAddClicked);
 		hbox.addChild(addBtn);
 		
 		var removeBtn = new Button();
 		removeBtn.text = "Remove";
+		removeBtn.addEventListener(UIEvent.CLICK, onRemovedClicked);
 		hbox.addChild(removeBtn);
 		
 		mCompListBox.addChild(hbox);
@@ -101,7 +104,7 @@ class PrefabEditor extends AssetEditor
 		}
 	}
 	
-	function addComponent(e : UIEvent) {
+	function onAddClicked(e : UIEvent) {
 		
 		var grid = new Grid();
 		grid.percentWidth = 100;
@@ -119,9 +122,17 @@ class PrefabEditor extends AssetEditor
 				var compClass = Type.resolveClass("fr.radstar.radengine.components." + input.text);
 				var comp = Type.createInstance(compClass,[]);
 				execute(new AddComponentToPrefab(mPrefab, comp));
-				refreshList();
 			}
 		});
+	}
+	
+	function onRemovedClicked(e : UIEvent) {
+		if (mComponentList.selectedIndex != -1) {
+			var item = mComponentList.getItem(mComponentList.selectedIndex);
+			var data = item.data;
+			var comp = data.component;
+			execute(new RemoveComponentFromPrefab(mPrefab, comp));
+		}
 	}
 	
 	function initCompEditor():Void 
@@ -158,6 +169,14 @@ class PrefabEditor extends AssetEditor
 		super.load(asset);
 		mPrefab = new Prefab("p" + Std.int(Math.random() * 999999));
 		mPrefab.load(asset.path);
+		refreshList();
+		
+		mPrefab.componentAdded.add(onCompChanged);
+		mPrefab.componentRemoved.add(onCompChanged);
+	}
+	
+	function onCompChanged(entity : Entity, comp : Class<Dynamic>) 
+	{
 		refreshList();
 	}
 	
