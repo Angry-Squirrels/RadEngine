@@ -1,5 +1,6 @@
 package fr.radstar.radengine.editor;
 import ash.core.Entity;
+import flash.events.Event;
 import fr.radstar.radengine.core.Level;
 import fr.radstar.radengine.core.RadAsset;
 import fr.radstar.radengine.editor.command.AddEntity;
@@ -35,7 +36,8 @@ class LevelEditor extends AssetEditor
 	var mEntityList : ListView;
 	var mCurrentEntity : Entity;
 	
-	var mComponentInspector : ComponentInspector;
+	var mComponentList : ComponentList;
+	var mComponentViewer : ComponentViewer;
 	var mLevel:Level;
 	
 	var mMenubar : MenuBar;
@@ -163,11 +165,23 @@ class LevelEditor extends AssetEditor
 		
 		mInspector.addChild(mEntityList);
 		
-		mComponentInspector = new ComponentInspector();
-		mComponentInspector.setEditor(this);
-		mComponentInspector.percentWidth = 100;
-		mComponentInspector.percentHeight = 80;
-		mInspector.addChild(mComponentInspector);
+		mComponentList = new ComponentList();
+		mComponentList.init(this);
+		mComponentList.percentWidth = 100;
+		mComponentList.percentHeight = 30;
+		mComponentList.addEventListener(ComponentList.COMPONENT_SELECTED, onComponentSelected);
+		mInspector.addChild(mComponentList);
+		
+		mComponentViewer = new ComponentViewer();
+		mComponentViewer.init(this);
+		mComponentViewer.percentWidth = 100;
+		mComponentViewer.percentHeight = 50;
+		mInspector.addChild(mComponentViewer);
+	}
+	
+	function onComponentSelected(e:UIEvent):Void 
+	{
+		mComponentViewer.setComponent(e.data.component);
 	}
 	
 	function onAddClicked(e:UIEvent):Void 
@@ -249,7 +263,7 @@ class LevelEditor extends AssetEditor
 		var ent = mEntityList.getItem(mEntityList.selectedIndex).data.entity;
 		if (ent != mCurrentEntity) {
 			mCurrentEntity = ent;
-			mComponentInspector.setEntity(ent);
+			mComponentList.setEntity(ent);
 		}
 	}
 	

@@ -3,6 +3,8 @@ package fr.radstar.radengine.editor;
 import fr.radstar.radengine.core.Level;
 import fr.radstar.radengine.editor.command.ChangeComponentField;
 import haxe.ui.toolkit.containers.Grid;
+import haxe.ui.toolkit.containers.ScrollView;
+import haxe.ui.toolkit.containers.VBox;
 import haxe.ui.toolkit.controls.CheckBox;
 import haxe.ui.toolkit.controls.Text;
 import haxe.ui.toolkit.controls.TextInput;
@@ -16,7 +18,7 @@ import Type;
  * ...
  * @author Thomas BAUDON
  */
-class ComponentViewer extends Component
+class ComponentViewer extends VBox
 {
 	
 	var mComponent : Dynamic;
@@ -24,6 +26,7 @@ class ComponentViewer extends Component
 	var mInputs : Map<String, Component>;
 	var mEditor : AssetEditor;
 	var mLastChange : Int = 0;
+	var mTitle:Text;
 
 	public function new() 
 	{
@@ -32,20 +35,35 @@ class ComponentViewer extends Component
 		mInputs = new  Map<String, Component>();
 	}
 	
-	public function init(comp : Dynamic, editor : AssetEditor) 
+	public function init(editor : AssetEditor) 
 	{
 		mEditor = editor;
-		mComponent = comp;
+		
+		mTitle = new Text();
+		addChild(mTitle);
+		
+		var scrollView = new ScrollView();
+		scrollView.percentWidth = 100;
+		scrollView.percentHeight = 100;
+		addChild(scrollView);
+		
 		mGrid = new Grid();
 		mGrid.columns = 2;
-		mGrid.percentHeight = 100;
 		mGrid.percentWidth = 100;
-		addChild(mGrid);
+		scrollView.addChild(mGrid);
+		
+		addEventListener(Event.ENTER_FRAME, update);
+	}
+	
+	public function setComponent(comp : Dynamic) {
+		mComponent = comp;
 		
 		var compName = Type.getClassName(Type.getClass(mComponent));
 		var nameSplit = compName.split('.');
 		compName = nameSplit[nameSplit.length - 1];
-		text = compName;
+		mTitle.text = compName;
+		
+		mGrid.removeAllChildren();
 		
 		for (field in Reflect.fields(mComponent)) {
 			// ignore private field
@@ -76,8 +94,6 @@ class ComponentViewer extends Component
 			mInputs[field] = input;
 			
 		}
-		
-		addEventListener(Event.ENTER_FRAME, update);
 	}
 	
 	function onFieldChange(e:UIEvent):Void 

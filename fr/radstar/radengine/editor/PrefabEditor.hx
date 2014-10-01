@@ -28,9 +28,7 @@ class PrefabEditor extends AssetEditor
 	
 	var mPrefab : Prefab;
 	var mHbox : HBox;
-	var mCompEditorBox : VBox;
-	var mCompListBox : VBox;
-	var mCompeditorTitle : Text;
+	var mCompViewer : ComponentViewer;
 	var mComponentList : ComponentList;
 
 	public function new() 
@@ -63,33 +61,17 @@ class PrefabEditor extends AssetEditor
 		editComponent(data.text, data.component);
 	}
 	
-	function editComponent(name : String, comp : Dynamic) {
-		mCompeditorTitle.text = name;
-		
-		mCompEditorBox.removeAllChildren();
-		
-		var compViewer = new ComponentViewer();
-		compViewer.init(comp, this);
-		compViewer.percentWidth = 100;
-		compViewer.percentHeight = 100;
-		mCompEditorBox.addChild(compViewer);
+	function editComponent(name : String, comp : Dynamic) {	
+		mCompViewer.setComponent(comp);
 	}
 	
 	function initCompEditor():Void 
 	{
-		var vbox = new VBox();
-		vbox.percentHeight = 100;
-		vbox.percentWidth = 80;
-		mHbox.addChild(vbox);
-		
-		mCompEditorBox = new VBox();
-		mCompEditorBox.percentWidth = 100;
-		mCompEditorBox.percentHeight = 100;
-		
-		mCompeditorTitle = new Text();
-		vbox.addChild(mCompeditorTitle);
-		
-		vbox.addChild(mCompEditorBox);
+		mCompViewer = new ComponentViewer();
+		mCompViewer.init(this);
+		mCompViewer.percentWidth = 80;
+		mCompViewer.percentHeight = 100;
+		mHbox.addChild(mCompViewer);
 	}
 	
 	override public function load(asset:RadAsset) 
