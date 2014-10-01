@@ -1,6 +1,7 @@
 package fr.radstar.radengine.editor;
 import fr.radstar.radengine.core.Prefab;
 import fr.radstar.radengine.core.RadAsset;
+import fr.radstar.radengine.editor.command.AddComponentToPrefab;
 import haxe.ui.toolkit.containers.Grid;
 import haxe.ui.toolkit.containers.HBox;
 import haxe.ui.toolkit.containers.ListView;
@@ -117,7 +118,7 @@ class PrefabEditor extends AssetEditor
 			if (button == PopupButton.OK) {
 				var compClass = Type.resolveClass("fr.radstar.radengine.components." + input.text);
 				var comp = Type.createInstance(compClass,[]);
-				mPrefab.add(comp);
+				execute(new AddComponentToPrefab(mPrefab, comp));
 				refreshList();
 			}
 		});
