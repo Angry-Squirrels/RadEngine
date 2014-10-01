@@ -66,9 +66,11 @@ class ComponentInspector extends Component
 		mEntity = ent;
 		mEntity.componentAdded.add(onCompAdded);
 		mEntity.componentRemoved.add(onCompRemoved);
-		
+	}
+	
+	public function refreshCompList() {
 		mAccordion.removeAllChildren();
-		for (comp in ent.components) {
+		for (comp in mEntity.components) {
 			var viewer = new ComponentViewer();
 			viewer.init(comp, mEditor);
 			viewer.percentWidth = 100;
@@ -79,12 +81,12 @@ class ComponentInspector extends Component
 	
 	function onCompRemoved(ent : Entity, comp : Class<Dynamic>) 
 	{
-		
+		refreshCompList();
 	}
 	
 	function onCompAdded(ent : Entity, comp : Class<Dynamic>) 
 	{
-		
+		refreshCompList();
 	}
 	
 }

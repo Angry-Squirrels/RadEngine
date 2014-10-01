@@ -1,19 +1,19 @@
 package fr.radstar.radengine.editor.command;
-import fr.radstar.radengine.core.Prefab;
+import ash.core.Entity;
 
 /**
  * ...
  * @author Thomas B
  */
-class AddComponentToPrefab implements ICommand
+class AddComponentToEntity implements ICommand
 {
 	
-	var mPrefab : Prefab;
+	var mEntity : Entity;
 	var mComponent : Dynamic;
 
-	public function new(prefab : Prefab, component : Dynamic) 
+	public function new(entity : Entity, component : Dynamic) 
 	{
-		mPrefab = prefab;
+		mEntity = entity;
 		mComponent = component;
 	}
 	
@@ -21,12 +21,12 @@ class AddComponentToPrefab implements ICommand
 	
 	public function exec():Void 
 	{
-		mPrefab.add(mComponent);
+		mEntity.add(mComponent);
 	}
 	
 	public function undo():Void 
 	{
-		mPrefab.remove(Type.getClass(mComponent));
+		mEntity.remove(Type.getClass(mComponent));
 	}
 	
 	
